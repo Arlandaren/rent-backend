@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"customer_service/internal/config"
+	"customer_service/internal/service"
 	"customer_service/internal/shared/storage/postgres"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -16,15 +16,12 @@ import (
 
 	"google.golang.org/grpc/credentials/insecure"
 
+	transport "customer_service/internal/transport/grpc"
+
 	desc "customer_service/pkg/grpc/customer_v1"
 )
 
-const grpcAddress = ":50051"
-
-type server struct {
-	desc.UnimplementedCustomerServiceServer
-	dbPool *pgxpool.Pool
-}
+const grpcAddress = ":8080"
 
 func main() {
 	cfg, err := config.GetPostgres()
@@ -38,6 +35,10 @@ func main() {
 	}
 	defer dbPool.Close()
 
+	customerService := service.NewCustomerService(dbPool)
+
+	customerServer := transport.NewCustomerServer(customerService)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -46,7 +47,7 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		if err := startGrpcServer(ctx, dbPool); err != nil {
+		if err := startGrpcServer(ctx, customerServer); err != nil {
 			log.Fatalf("Failed to start gRPC server: %v", err)
 		}
 	}()
@@ -61,7 +62,7 @@ func main() {
 	log.Println("Server gracefully stopped.")
 }
 
-func startGrpcServer(ctx context.Context, dbPool *pgxpool.Pool) error {
+func startGrpcServer(ctx context.Context, customerServer *transport.CustomerServer) error {
 	grpcServer := grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 	)
@@ -69,9 +70,7 @@ func startGrpcServer(ctx context.Context, dbPool *pgxpool.Pool) error {
 	reflection.Register(grpcServer)
 
 	// Предполагается, что у вас есть реализация сервера, которая принимает dbPool
-	desc.RegisterCustomerServiceServer(grpcServer, &server{
-		dbPool: dbPool,
-	})
+	desc.RegisterCustomerServiceServer(grpcServer, customerServer)
 
 	list, err := net.Listen("tcp", grpcAddress)
 	if err != nil {
