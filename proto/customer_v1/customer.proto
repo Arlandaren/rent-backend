@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package customer_v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "customer_service/pkg/grpc/customer_v1;customer_v1";
+
+message Customer {
+  int64 id = 1;
+  string name = 2;
+  string phone = 3;
+  string passport = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+service CustomerService {
+  rpc NewCustomer(customer_v1.NewCustomerRequest) returns (customer_v1.NewCustomerResponse) {}
+  rpc RemoveCustomer(customer_v1.RemoveCustomerRequest) returns (customer_v1.RemoveCustomerResponse) {}
+  rpc UpdateCustomer(customer_v1.UpdateCustomerRequest) returns (customer_v1.UpdateCustomerResponse) {}
+}
+
+message UpdateCustomerRequest {
+  int64 id = 1;
+  string name = 2;
+  string phone = 3;
+  string passport = 4;
+}
+
+message UpdateCustomerResponse {
+  bool success = 1;
+}
+
+message RemoveCustomerRequest {
+  int64 id = 1;
+}
+
+message RemoveCustomerResponse {
+  bool success = 1;
+}
+
+message NewCustomerRequest {
+  string name = 2;
+  string phone = 3;
+  string passport = 4;
+}
+
+message NewCustomerResponse {
+  customer_v1.Customer customer = 1;
+}
