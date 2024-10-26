@@ -5,6 +5,7 @@ import (
 	"customer_service/internal/config"
 	"customer_service/internal/repository"
 	"customer_service/internal/service"
+	"customer_service/internal/shared/kafka"
 	"customer_service/internal/shared/storage/postgres"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -25,12 +26,16 @@ import (
 const grpcAddress = ":8080"
 
 func main() {
-	cfg, err := config.GetPostgres()
+	postgresCfg, err := config.GetPostgres()
 	if err != nil {
 		log.Fatalf("Failed to get config: %v", err)
 	}
 
-	dbPool, err := postgres.InitPostgres(cfg, 5)
+	kafkaCfg := kafka.NewConfig([]string{os.Getenv("KAFKA_BROKER_ADDRESS")})
+
+	kafkaProducer, err := kafka.NewProducer(kafkaCfg)
+
+	dbPool, err := postgres.InitPostgres(postgresCfg, 5)
 	if err != nil {
 		log.Fatalf("Failed to connect to Postgres: %v", err)
 	}
@@ -40,7 +45,7 @@ func main() {
 
 	customerRepository := repository.NewCustomerRepository(pgxWrapper)
 
-	customerService := service.NewCustomerService(customerRepository)
+	customerService := service.NewCustomerService(customerRepository, kafkaProducer)
 
 	customerServer := transport.NewCustomerServer(customerService)
 
