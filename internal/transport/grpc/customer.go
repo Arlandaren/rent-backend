@@ -3,6 +3,8 @@ package grpc
 import (
 	"customer_service/internal/service"
 	desc "customer_service/pkg/grpc/customer_v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"log"
 
 	"context"
@@ -24,7 +26,9 @@ func (s *CustomerServer) NewCustomer(ctx context.Context, req *desc.NewCustomerR
 	customer, err := s.customerService.New(ctx, req.GetName(), req.GetPhone(), req.GetPassport())
 
 	if err != nil {
-		return nil, err
+		log.Printf("Failed to create new customer: %v\n", err)
+
+		return nil, status.Errorf(codes.Internal, "failed to create customer: %v", err)
 	}
 
 	newCustomer := &desc.Customer{
