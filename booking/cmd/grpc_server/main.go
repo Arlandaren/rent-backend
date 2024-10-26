@@ -24,7 +24,7 @@ import (
 
 	transport "service/internal/transport/grpc"
 
-	desc "service/pkg/grpc/apartment_v1"
+	desc "service/pkg/grpc/booking_v1"
 )
 
 const grpcAddress = ":8080"
@@ -84,7 +84,7 @@ func startGrpcServer(ctx context.Context, appServer *transport.Server) error {
 
 	reflection.Register(grpcServer)
 
-	desc.RegisterApartmentServiceServer(grpcServer, appServer)
+	desc.RegisterBookingServiceServer(grpcServer, appServer)
 
 	list, err := net.Listen("tcp", grpcAddress)
 	if err != nil {
