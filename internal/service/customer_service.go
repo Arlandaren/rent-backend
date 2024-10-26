@@ -1,25 +1,27 @@
 package service
 
 import (
-	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"context"
+	"customer_service/internal/repository"
 	"log"
 )
 
 type CustomerService struct {
-	db *pgxpool.Pool
+	repo *repository.CustomerRepository
 }
 
-func NewCustomerService(db *pgxpool.Pool) *CustomerService {
+func NewCustomerService(repo *repository.CustomerRepository) *CustomerService {
 	log.Println("NewCustomerService")
 	return &CustomerService{
-		db: db,
+		repo: repo,
 	}
 }
 
-func (s *CustomerService) NewCustomer(name, phone, passport string) (string, error) {
-
+func (s *CustomerService) New(ctx context.Context, name, phone, passport string) (*repository.Customer, error) {
+	customer, err := s.repo.New(ctx, name, phone, passport)
+	if err != nil {
+		return nil, err
+	}
 	log.Println("NewCustomer")
-
-	return fmt.Sprintf("NewCustomer: %s, %s, %s", name, phone, passport), nil
+	return customer, nil
 }

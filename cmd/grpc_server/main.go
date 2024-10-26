@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"customer_service/internal/config"
+	"customer_service/internal/repository"
 	"customer_service/internal/service"
 	"customer_service/internal/shared/storage/postgres"
 	"google.golang.org/grpc"
@@ -35,7 +36,11 @@ func main() {
 	}
 	defer dbPool.Close()
 
-	customerService := service.NewCustomerService(dbPool)
+	pgxWrapper := postgres.NewWrapper(dbPool)
+
+	customerRepository := repository.NewCustomerRepository(pgxWrapper)
+
+	customerService := service.NewCustomerService(customerRepository)
 
 	customerServer := transport.NewCustomerServer(customerService)
 
@@ -69,7 +74,6 @@ func startGrpcServer(ctx context.Context, customerServer *transport.CustomerServ
 
 	reflection.Register(grpcServer)
 
-	// Предполагается, что у вас есть реализация сервера, которая принимает dbPool
 	desc.RegisterCustomerServiceServer(grpcServer, customerServer)
 
 	list, err := net.Listen("tcp", grpcAddress)
