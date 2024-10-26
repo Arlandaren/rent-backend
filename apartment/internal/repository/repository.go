@@ -12,10 +12,11 @@ type Repository struct {
 }
 
 type Apartment struct {
-	ID        int64
-	Title     string
-	Expenses  int64
-	CreatedAt time.Time
+	ID        int64     `json:"id"`
+	Title     string    `json:"title"`
+	Expenses  int64     `json:"expenses"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func NewRepository(wrapper *postgres.Wrapper) *Repository {
@@ -26,27 +27,22 @@ func NewRepository(wrapper *postgres.Wrapper) *Repository {
 }
 
 func (r *Repository) New(ctx context.Context, title string, expenses int64) (*Apartment, error) {
-	var id int
-	var createdAt time.Time
+	var apartment Apartment
 	err := r.db.QueryRow(
 		ctx,
-		"INSERT INTO apartment (title, expenses) VALUES ($1, $2) RETURNING id, created_at",
+		"INSERT INTO apartment (title, expenses) VALUES ($1, $2) RETURNING id, status,created_at",
 		title, expenses,
-	).Scan(&id, &createdAt)
+	).Scan(&apartment.ID, &apartment.Status, &apartment.CreatedAt)
 
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
 		return nil, err
 	}
 
-	apartment := &Apartment{
-		ID:        int64(id),
-		Title:     title,
-		Expenses:  expenses,
-		CreatedAt: createdAt,
-	}
+	apartment.Title = title
+	apartment.Expenses = expenses
 
-	return apartment, nil
+	return &apartment, nil
 }
 
 func (r *Repository) Remove(ctx context.Context, id int64) error {
@@ -57,4 +53,23 @@ func (r *Repository) Remove(ctx context.Context, id int64) error {
 	}
 
 	return nil
+}
+
+func (r *Repository) Update(ctx context.Context, id, expenses int64, status, title string) (*Apartment, error) {
+	var apartment Apartment
+
+	err := r.db.QueryRow(ctx, `
+        UPDATE apartment
+        SET title = $1, expenses = $2, status = $3
+        WHERE id = $4
+        RETURNING id, title, expenses, status, created_at
+    `, title, expenses, status, id).Scan(
+		&apartment.ID, &apartment.Title, &apartment.Expenses, &apartment.Status, &apartment.CreatedAt,
+	)
+
+	if err != nil {
+		log.Printf("Error executing query: %v", err)
+		return nil, err
+	}
+	return &apartment, nil
 }

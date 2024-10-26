@@ -30,14 +30,7 @@ func (s *Service) New(ctx context.Context, title string, expenses int64) (*repos
 	}
 	log.Println("NewApartment")
 
-	event := map[string]string{
-		"id":         fmt.Sprintf("%d", apartment.ID),
-		"title":      apartment.Title,
-		"expenses":   fmt.Sprintf("%d", apartment.Expenses),
-		"created_at": apartment.CreatedAt.String(),
-	}
-
-	message, err := json.Marshal(event)
+	message, err := json.Marshal(apartment)
 	if err != nil {
 		return nil, err
 	}
@@ -62,4 +55,26 @@ func (s *Service) Remove(ctx context.Context, id int64) error {
 	}
 	log.Println("RemoveApartment")
 	return nil
+}
+
+func (s *Service) Update(ctx context.Context, id, expenses int64, status, title string) (*repository.Apartment, error) {
+
+	apartment, err := s.repo.Update(ctx, id, expenses, status, title)
+	if err != nil {
+		return nil, err
+	}
+
+	message, err := json.Marshal(apartment)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.producer.ProduceMessage("apartment_updated", message)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("UpdateApartment")
+
+	return apartment, nil
 }

@@ -54,3 +54,24 @@ func (s *Server) RemoveApartment(ctx context.Context, req *desc.RemoveApartmentR
 		Success: true,
 	}, nil
 }
+
+func (s *Server) UpdateApartment(ctx context.Context, req *desc.UpdateApartmentRequest) (*desc.UpdateApartmentResponse, error) {
+	apartment, err := s.Service.Update(ctx, req.GetId(), req.GetExpenses(), req.GetStatus(), req.GetTitle())
+	if err != nil {
+		log.Printf("Failed to update customer: %v\n", err)
+
+		return nil, status.Errorf(codes.Internal, "failed to update customer: %v", err)
+	}
+
+	updatedApartment := &desc.Apartment{
+		Id:        apartment.ID,
+		Title:     apartment.Title,
+		Expenses:  apartment.Expenses,
+		Status:    apartment.Status,
+		CreatedAt: timestamppb.New(apartment.CreatedAt),
+	}
+
+	return &desc.UpdateApartmentResponse{
+		Apartment: updatedApartment,
+	}, nil
+}
