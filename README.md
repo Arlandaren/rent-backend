@@ -22,14 +22,14 @@
 1. **Клонируйте репозиторий:**
 
     ```bash
-    git clone https://github.com/your-username/apartment-rental-service.git
-    cd apartment-rental-service
+    git clone https://github.com/Alrandaren/rent-backend.git
+    cd rent-backend
     ```
 
 2. **Соберите и запустите контейнеры Docker:**
 
     ```bash
-    docker-compose up --build
+    docker-compose up -d
     ```
 
 3. **Конфигурация:** Убедитесь, что все переменные окружения и конфигурационные файлы настроены должным образом для вашего окружения.
