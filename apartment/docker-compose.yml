@@ -12,10 +12,10 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data/pgdata
     ports:
-      - 5433:5432
+      - 5434:5432
 
   server:
-    build: ./
+    build: .
     environment:
       - PG_STRING=${PG_STRING}
       - KAFKA_BROKER_ADDRESS=${KAFKA_BROKER_ADDRESS}

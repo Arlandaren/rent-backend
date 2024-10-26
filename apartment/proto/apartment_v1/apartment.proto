@@ -9,7 +9,7 @@ option go_package = "apartment_service/pkg/grpc/apartment_v1";
 message Apartment {
   int64 id = 1;
   string title = 2;
-  string expenses = 3;
+  int64 expenses = 3;
   string status = 4;
   google.protobuf.Timestamp created_at = 5;
 }
@@ -22,7 +22,7 @@ service ApartmentService {
 
 message NewApartmentRequest {
   string title = 1;
-  string expenses = 2;
+  int64 expenses = 2;
 }
 
 message NewApartmentResponse {
@@ -32,7 +32,7 @@ message NewApartmentResponse {
 message UpdateApartmentRequest {
   int64 id = 1;
   string title = 2;
-  string expenses = 3;
+  int64 expenses = 3;
   string status = 4;
 }
 
