@@ -41,3 +41,16 @@ func (s *Server) NewApartment(ctx context.Context, req *desc.NewApartmentRequest
 		Apartment: newApartment,
 	}, nil
 }
+
+func (s *Server) RemoveApartment(ctx context.Context, req *desc.RemoveApartmentRequest) (*desc.RemoveApartmentResponse, error) {
+	err := s.Service.Remove(ctx, req.GetId())
+	if err != nil {
+		log.Printf("Failed to remove customer: %v\n", err)
+
+		return nil, status.Errorf(codes.Internal, "failed to remove customer: %v", err)
+	}
+
+	return &desc.RemoveApartmentResponse{
+		Success: true,
+	}, nil
+}

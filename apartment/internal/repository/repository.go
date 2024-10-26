@@ -48,3 +48,13 @@ func (r *Repository) New(ctx context.Context, title string, expenses int64) (*Ap
 
 	return apartment, nil
 }
+
+func (r *Repository) Remove(ctx context.Context, id int64) error {
+	_, err := r.db.Exec(ctx, "DELETE FROM apartment WHERE id = $1", id)
+	if err != nil {
+		log.Printf("Error executing query: %v", err)
+		return err
+	}
+
+	return nil
+}

@@ -42,10 +42,24 @@ func (s *Service) New(ctx context.Context, title string, expenses int64) (*repos
 		return nil, err
 	}
 
-	err = s.producer.ProduceMessage("apartment", message)
+	err = s.producer.ProduceMessage("apartment_created", message)
 	if err != nil {
 		return nil, err
 	}
 
 	return apartment, nil
+}
+
+func (s *Service) Remove(ctx context.Context, id int64) error {
+	if err := s.repo.Remove(ctx, id); err != nil {
+		log.Printf("Failed to remove apartment: %v", err)
+		return err
+	}
+
+	err := s.producer.ProduceMessage("apartment_removed", []byte(fmt.Sprintf(`{"id": "%d"}`, id)))
+	if err != nil {
+		return err
+	}
+	log.Println("RemoveApartment")
+	return nil
 }
