@@ -1,4 +1,3 @@
-# Build stage
 FROM golang:1.23.2-alpine AS builder
 
 RUN apk update && apk add --no-cache ca-certificates git gcc g++ libc-dev binutils
@@ -10,17 +9,18 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-# Specify the path to the main.go file to build the application binary
-RUN go build -o bin/application cmd/grpc_server/main.go
+RUN go build -o bin/grpc_server cmd/grpc_server/main.go
 
-# Runner stage
+RUN go build -o bin/migrator cmd/migrator/main.go
+
 FROM alpine AS runner
 
 RUN apk update && apk add --no-cache ca-certificates libc6-compat bash && rm -rf /var/cache/apk/**
 
 WORKDIR /opt
 
-COPY --from=builder /opt/bin/application ./
+COPY --from=builder /opt/migrations ./migrations
+COPY --from=builder /opt/bin/grpc_server ./
+COPY --from=builder /opt/bin/migrator ./
 
-# Set the entry point to the compiled application
-CMD ["./application"]
+CMD ["./grpc_server"]
