@@ -48,3 +48,22 @@ func (c *CustomerRepository) New(ctx context.Context, name, phone, passport stri
 
 	return customer, nil
 }
+
+func (c *CustomerRepository) Remove(ctx context.Context, id int) error {
+	_, err := c.db.Exec(ctx, "DELETE FROM customers WHERE id = $1", id)
+	if err != nil {
+		log.Println("Failed to remove customer: ", err)
+		return err
+	}
+	log.Println("RemoveCustomer")
+	return nil
+}
+
+func (c *CustomerRepository) Update(ctx context.Context, id int, name, phone, passport string) error {
+	_, err := c.db.Exec(ctx, "UPDATE customers SET name = $1, phone = $2, passport = $3 WHERE id = $4", name, phone, passport, id)
+	if err != nil {
+		return err
+	}
+	log.Println("UpdateCustomer")
+	return nil
+}
