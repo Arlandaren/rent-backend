@@ -1,7 +1,9 @@
-CREATE TABLE apartment (
+CREATE TABLE order (
    id BIGSERIAL PRIMARY KEY,
-   title VARCHAR NOT NULL,
-   expenses INTEGER NOT NULL ,
-   status VARCHAR(20) DEFAULT 'inactive',
-   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+   apartment_id BIGINT NOT NULL,
+   date_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   date_end TIMESTAMP,
+   price INTEGER,
+   customer_id BIGINT NOT NULL,
+   status VARCHAR(20) DEFAULT 'inactive'
 );

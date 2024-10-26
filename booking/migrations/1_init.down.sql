@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS apartment;
+DROP TABLE IF EXISTS order;
