@@ -4,7 +4,7 @@ package apartment_v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "apartment_service/pkg/grpc/apartment_v1";
+option go_package = "service/pkg/grpc/apartment_v1";
 
 message Apartment {
   int64 id = 1;
