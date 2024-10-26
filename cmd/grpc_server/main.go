@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"customer_service/internal/config"
 	"customer_service/internal/repository"
 	"customer_service/internal/service"
+	"customer_service/internal/shared/config"
 	"customer_service/internal/shared/kafka"
 	"customer_service/internal/shared/storage/postgres"
 	"google.golang.org/grpc"

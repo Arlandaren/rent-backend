@@ -2,12 +2,11 @@ package postgres
 
 import (
 	"context"
+	"customer_service/internal/shared/config"
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
-
-	"customer_service/internal/config"
 )
 
 func InitPostgres(cfg *config.PostgresConfig, maxRetries int) (*pgxpool.Pool, error) {

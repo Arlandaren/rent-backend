@@ -1,7 +1,7 @@
 package main
 
 import (
-	"customer_service/internal/config"
+	"customer_service/internal/shared/config"
 	"errors"
 	"flag"
 	"fmt"
