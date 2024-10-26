@@ -86,8 +86,6 @@ func startGrpcServer(ctx context.Context, customerServer *transport.CustomerServ
 		return err
 	}
 
-	log.Printf("gRPC server listening at %v\n", grpcAddress)
-
 	go func() {
 		if err := grpcServer.Serve(list); err != nil {
 			log.Fatalf("gRPC server failed: %v", err)

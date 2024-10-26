@@ -50,3 +50,53 @@ func (s *CustomerService) New(ctx context.Context, name, phone, passport string)
 	log.Println("NewCustomer")
 	return customer, nil
 }
+
+func (s *CustomerService) Remove(ctx context.Context, id int) error {
+	err := s.repo.Remove(ctx, id)
+	if err != nil {
+		log.Printf("Failed to remove customer: %v", err)
+		return err
+	}
+
+	event := map[string]string{
+		"id": strconv.Itoa(id),
+	}
+	message, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Failed to marshal event: %v", err)
+		return err
+	}
+	err = s.producer.ProduceMessage("customer_removed", message)
+	if err != nil {
+		return err
+	}
+
+	log.Println("RemoveCustomer")
+	return nil
+}
+
+func (s *CustomerService) Update(ctx context.Context, id int, name, phone, passport string) error {
+	err := s.repo.Update(ctx, id, name, phone, passport)
+	if err != nil {
+		log.Printf("Failed to update customer: %v", err)
+		return err
+	}
+	event := map[string]string{
+		"id":       strconv.Itoa(id),
+		"name":     name,
+		"phone":    phone,
+		"passport": passport,
+	}
+	message, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Failed to marshal event: %v", err)
+		return err
+	}
+	err = s.producer.ProduceMessage("customer_updated", message)
+	if err != nil {
+		return err
+	}
+
+	log.Println("UpdateCustomer")
+	return nil
+}
