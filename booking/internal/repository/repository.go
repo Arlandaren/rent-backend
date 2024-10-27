@@ -83,3 +83,15 @@ func (r *Repository) Cancel(ctx context.Context, req *desc.CancelBookingRequest)
 	return status, nil
 
 }
+
+func (r *Repository) Update(ctx context.Context, req *desc.UpdateBookingRequest) (int64, error) {
+	var id int64
+	err := r.db.QueryRow(ctx, "UPDATE booking SET apartment_id = $1, price = $2, customer_id = $3, comment = $4 WHERE id = $5 RETURNING id",
+		req.ApartmentId, req.Price, req.CustomerId, req.Comment, req.Id).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}

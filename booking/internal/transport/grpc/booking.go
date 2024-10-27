@@ -7,7 +7,7 @@ import (
 )
 
 type Server struct {
-	desc.UnimplementedBookingServiceServer
+	desc.BookingServiceServer
 	Service *service.Service
 }
 
@@ -31,4 +31,8 @@ func (s *Server) FinishBooking(ctx context.Context, req *desc.FinishBookingReque
 
 func (s *Server) CancelBooking(ctx context.Context, req *desc.CancelBookingRequest) (*desc.CancelBookingResponse, error) {
 	return s.Service.Cancel(ctx, req)
+}
+
+func (s *Server) UpdateBooking(ctx context.Context, req *desc.UpdateBookingRequest) (*desc.UpdateBookingResponse, error) {
+	return s.Service.Update(ctx, req)
 }

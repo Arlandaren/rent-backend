@@ -1,7 +1,7 @@
 syntax = "proto3";
 package booking_v1;
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
+
 option go_package = "service/pkg/grpc/booking_v1";
 
 message Booking {
@@ -18,7 +18,7 @@ message Booking {
 
 service BookingService {
   rpc NewBooking(NewBookingRequest) returns (Booking) {}
-  rpc UpdateBooking(UpdateBookingRequest) returns (Booking) {}
+  rpc UpdateBooking(UpdateBookingRequest) returns (UpdateBookingResponse) {}
   rpc BeginBooking(BeginBookingRequest) returns (BeginBookingResponse) {}
   rpc FinishBooking(FinishBookingRequest) returns (FinishBookingResponse) {}
   rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse) {}
@@ -51,12 +51,15 @@ message NewBookingRequest {
 
 message UpdateBookingRequest {
   int64 id = 1;
-  google.protobuf.Int64Value apartment_id = 2;
-  google.protobuf.Int64Value price = 3;
-  google.protobuf.Int64Value customer_id = 4;
-  google.protobuf.Timestamp date_start = 5;
-  google.protobuf.Timestamp date_end = 6;
-  google.protobuf.StringValue comment = 7;
+  int64 apartment_id = 2;
+  int64 price = 3;
+  int64 customer_id = 4;
+  string comment = 7;
+}
+
+
+message UpdateBookingResponse {
+  int64 id = 1;
 }
 
 message CancelBookingRequest {

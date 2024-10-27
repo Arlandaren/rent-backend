@@ -146,3 +146,32 @@ func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*
 	return &desc.CancelBookingResponse{Status: status}, nil
 
 }
+
+func (s *Service) Update(ctx context.Context, req *desc.UpdateBookingRequest) (*desc.UpdateBookingResponse, error) {
+	id, err := s.repo.Update(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	event := map[string]string{
+		"id":           strconv.Itoa(int(id)),
+		"apartment_id": strconv.Itoa(int(req.ApartmentId)),
+		"price":        strconv.Itoa(int(req.Price)),
+		"customer_id":  strconv.Itoa(int(req.CustomerId)),
+		"comment":      req.Comment,
+	}
+
+	msg, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.producer.ProduceMessage("booking_updated", msg)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("Booking updated")
+
+	return &desc.UpdateBookingResponse{Id: id}, nil
+}
