@@ -12,7 +12,7 @@ import (
 )
 
 type CustomerServer struct {
-	desc.UnimplementedCustomerServiceServer
+	desc.CustomerServiceServer
 	customerService *service.CustomerService
 }
 

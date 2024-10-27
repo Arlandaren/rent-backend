@@ -11,7 +11,7 @@ import (
 )
 
 type Server struct {
-	desc.UnimplementedApartmentServiceServer
+	desc.ApartmentServiceServer
 	Service *service.Service
 }
 
