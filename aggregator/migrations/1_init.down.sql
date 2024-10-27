@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS apartment;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS booking;
+
