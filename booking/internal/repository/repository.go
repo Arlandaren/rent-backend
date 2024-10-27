@@ -56,3 +56,16 @@ func (r *Repository) Begin(ctx context.Context, req *desc.BeginBookingRequest) (
 
 	return dateStart, nil
 }
+
+func (r *Repository) Finish(ctx context.Context, req *desc.FinishBookingRequest) (time.Time, error) {
+	var dateEnd time.Time
+	err := r.db.QueryRow(ctx,
+		"UPDATE booking SET date_end = $1, status = 'finished' WHERE id = $2 AND  status = 'active' RETURNING date_end",
+		time.Now(), req.Id).Scan(&dateEnd)
+
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return dateEnd, nil
+}

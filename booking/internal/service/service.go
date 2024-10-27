@@ -88,3 +88,34 @@ func (s *Service) Begin(ctx context.Context, req *desc.BeginBookingRequest) (*de
 	return response, nil
 
 }
+
+func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*desc.FinishBookingResponse, error) {
+	date, err := s.repo.Finish(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("Booking finished")
+
+	event := map[string]string{
+		"id":       strconv.Itoa(int(req.Id)),
+		"date_end": date.String(),
+	}
+
+	msg, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.producer.ProduceMessage("booking_finished", msg)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &desc.FinishBookingResponse{
+		Id:      req.Id,
+		DateEnd: timestamppb.New(date),
+	}
+
+	return response, nil
+}
