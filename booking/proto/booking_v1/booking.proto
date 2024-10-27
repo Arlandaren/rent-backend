@@ -20,7 +20,7 @@ service BookingService {
   rpc NewBooking(NewBookingRequest) returns (Booking) {}
   rpc UpdateBooking(UpdateBookingRequest) returns (Booking) {}
   rpc BeginBooking(BeginBookingRequest) returns (BeginBookingResponse) {}
-  rpc FinishBooking(FinishBookingRequest) returns (Booking) {}
+  rpc FinishBooking(FinishBookingRequest) returns (FinishBookingResponse) {}
   rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse) {}
 }
 
@@ -64,5 +64,5 @@ message CancelBookingRequest {
 }
 
 message CancelBookingResponse {
-  bool success = 1;
+  string status = 1;
 }
