@@ -5,3 +5,21 @@ CREATE TABLE apartment (
    status VARCHAR(20) DEFAULT 'inactive',
    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE customers (
+   id BIGSERIAL PRIMARY KEY,
+   name VARCHAR(255) NOT NULL,
+   phone VARCHAR(50) NOT NULL ,
+   passport VARCHAR,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE booking (
+   id BIGSERIAL PRIMARY KEY,
+   apartment_id BIGINT NOT NULL,
+   date_start TIMESTAMP,
+   date_end TIMESTAMP,
+   price BIGINT NOT NULL,
+   customer_id BIGINT NOT NULL,
+   status VARCHAR(20) DEFAULT 'pending',
+   comment VARCHAR(255),
+   date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

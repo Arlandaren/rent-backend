@@ -2,11 +2,11 @@ package grpc
 
 import (
 	"service/internal/service"
-	desc "service/pkg/grpc/apartment_v1"
+	desc "service/pkg/grpc/aggregator_v1"
 )
 
 type Server struct {
-	desc.UnimplementedApartmentServiceServer
+	desc.UnimplementedAggregatorServer
 	Service *service.Service
 }
 
