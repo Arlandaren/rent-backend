@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package aggregator_v1;
+
+option go_package = "service/pkg/grpc/aggregator_v1";
+
+import "google/protobuf/timestamp.proto";
+
+message Customer {
+  int64 id = 1;
+  string name = 2;
+  string phone = 3;
+  string passport = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message Apartment {
+  int64 id = 1;
+  string title = 2;
+  int64 expenses = 3;
+  string status = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message Booking {
+  int64 id = 1;
+  int64 apartment_id = 2;
+  google.protobuf.Timestamp date_start = 3;
+  google.protobuf.Timestamp date_end = 4;
+  int64 price = 5;
+  int64 customer_id = 6;
+  string status = 7;
+  string comment = 8;
+  google.protobuf.Timestamp date_created = 9;
+}
+
+service Aggregator {
+  rpc CustomerGet(CustomerGetRequest) returns (CustomerGetResponse) {}
+  rpc CustomerList(CustomerListRequest) returns (CustomerListResponse) {}
+  rpc ApartmentGet(ApartmentGetRequest) returns (ApartmentGetResponse) {}
+  rpc ApartmentList(ApartmentListRequest) returns (ApartmentListResponse) {}
+  rpc BookingGet(BookGetRequest) returns (BookGetResponse) {}
+  rpc BookingList(BookListRequest) returns (BookListResponse) {}
+}
+
+message CustomerGetRequest {
+  int64 id = 1;
+}
+
+message CustomerGetResponse {
+  Customer customer = 1;
+}
+
+message ApartmentGetRequest {
+  int64 id = 1;
+}
+
+message ApartmentGetResponse {
+  Apartment apartment = 1;
+}
+
+message BookGetRequest {
+  int64 id = 1;
+}
+
+message BookGetResponse {
+  Booking booking = 1;
+}
+
+message CustomerListRequest {
+  string cursor = 1;
+  int32 limit = 2;
+}
+
+message CustomerListResponse {
+  repeated Customer customers = 1;
+  string next_cursor = 2;
+}
+
+message ApartmentListRequest {
+  string cursor = 1;
+  int32 limit = 2;
+}
+
+message ApartmentListResponse {
+  repeated Apartment apartments = 1;
+  string next_cursor = 2;
+}
+
+message BookListRequest {
+  string cursor = 1;
+  int32 limit = 2;
+}
+
+message BookListResponse {
+  repeated Booking bookings = 1;
+  string next_cursor = 2;
+}
+
