@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package apartment_v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "apartment_service/pkg/grpc/apartment_v1";
+
+message Apartment {
+  int64 id = 1;
+  string title = 2;
+  int64 expenses = 3;
+  string status = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+service ApartmentService {
+  rpc NewApartment(NewApartmentRequest) returns (NewApartmentResponse) {}
+  rpc UpdateApartment(UpdateApartmentRequest) returns (UpdateApartmentResponse) {}
+  rpc RemoveApartment(RemoveApartmentRequest) returns (RemoveApartmentResponse) {}
+}
+
+message NewApartmentRequest {
+  string title = 1;
+  int64 expenses = 2;
+}
+
+message NewApartmentResponse {
+  apartment_v1.Apartment apartment = 1;
+}
+
+message UpdateApartmentRequest {
+  int64 id = 1;
+  string title = 2;
+  int64 expenses = 3;
+  string status = 4;
+}
+
+message UpdateApartmentResponse {
+  apartment_v1.Apartment apartment = 1;
+}
+
+message RemoveApartmentRequest {
+  int64 id = 1;
+}
+
+message RemoveApartmentResponse {
+  bool success = 1;
+}
