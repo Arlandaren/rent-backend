@@ -6,25 +6,31 @@ option go_package = "service/pkg/grpc/booking_v1";
 
 message Booking {
   int64 id = 1;
-  int64 appartment_id = 2;
+  int64 apartment_id = 2;
   google.protobuf.Timestamp date_start = 3;
   google.protobuf.Timestamp date_end = 4;
   int64 price = 5;
   int64 customer_id = 6;
   string status = 7;
+  string comment = 8;
+  google.protobuf.Timestamp date_created = 9;
 }
 
 service BookingService {
-  rpc CreateBooking(CreateBookingRequest) returns (Booking) {}
+  rpc NewBooking(NewBookingRequest) returns (Booking) {}
   rpc UpdateBooking(UpdateBookingRequest) returns (Booking) {}
-  rpc BeginBooking(BeginBookingRequest) returns (Booking) {}
+  rpc BeginBooking(BeginBookingRequest) returns (BeginBookingResponse) {}
   rpc FinishBooking(FinishBookingRequest) returns (Booking) {}
   rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse) {}
 }
 
 message BeginBookingRequest {
   int64 id = 1;
-  google.protobuf.Timestamp date_start = 2;
+}
+
+message BeginBookingResponse {
+  google.protobuf.Timestamp date_start = 1;
+  int64 id = 2;
 }
 
 message FinishBookingRequest {
@@ -32,21 +38,21 @@ message FinishBookingRequest {
   google.protobuf.Timestamp date_end = 2;
 }
 
-message CreateBookingRequest {
-  int64 appartment_id = 1;
+message NewBookingRequest {
+  int64 apartment_id = 1;
   int64 price = 2;
   int64 customer_id = 3;
-  google.protobuf.Timestamp date_start = 4;
-  google.protobuf.Timestamp date_end = 5;
+  string comment = 4;
 }
 
 message UpdateBookingRequest {
   int64 id = 1;
-  google.protobuf.Int64Value appartment_id = 2;
+  google.protobuf.Int64Value apartment_id = 2;
   google.protobuf.Int64Value price = 3;
   google.protobuf.Int64Value customer_id = 4;
   google.protobuf.Timestamp date_start = 5;
   google.protobuf.Timestamp date_end = 6;
+  google.protobuf.StringValue comment = 7;
 }
 
 message CancelBookingRequest {
