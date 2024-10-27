@@ -69,3 +69,17 @@ func (r *Repository) Finish(ctx context.Context, req *desc.FinishBookingRequest)
 
 	return dateEnd, nil
 }
+
+func (r *Repository) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (string, error) {
+	var status string
+	err := r.db.QueryRow(ctx,
+		"UPDATE booking SET status = 'cancelled' WHERE id = $1 AND status != 'finished' RETURNING status",
+		req.Id).Scan(&status)
+
+	if err != nil {
+		return "", err
+	}
+
+	return status, nil
+
+}

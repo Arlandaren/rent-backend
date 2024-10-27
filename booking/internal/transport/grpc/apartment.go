@@ -28,3 +28,7 @@ func (s *Server) BeginBooking(ctx context.Context, req *desc.BeginBookingRequest
 func (s *Server) FinishBooking(ctx context.Context, req *desc.FinishBookingRequest) (*desc.FinishBookingResponse, error) {
 	return s.Service.Finish(ctx, req)
 }
+
+func (s *Server) CancelBooking(ctx context.Context, req *desc.CancelBookingRequest) (*desc.CancelBookingResponse, error) {
+	return s.Service.Cancel(ctx, req)
+}

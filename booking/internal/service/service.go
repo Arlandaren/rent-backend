@@ -119,3 +119,30 @@ func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*
 
 	return response, nil
 }
+
+func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*desc.CancelBookingResponse, error) {
+	status, err := s.repo.Cancel(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	event := map[string]string{
+		"id":     strconv.Itoa(int(req.Id)),
+		"status": status,
+	}
+
+	msg, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.producer.ProduceMessage("booking_cancelled", msg)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("Booking cancelled")
+
+	return &desc.CancelBookingResponse{Status: status}, nil
+
+}
