@@ -35,7 +35,11 @@ message BeginBookingResponse {
 
 message FinishBookingRequest {
   int64 id = 1;
-  google.protobuf.Timestamp date_end = 2;
+}
+
+message FinishBookingResponse {
+  google.protobuf.Timestamp date_end = 1;
+  int64 id = 2;
 }
 
 message NewBookingRequest {
