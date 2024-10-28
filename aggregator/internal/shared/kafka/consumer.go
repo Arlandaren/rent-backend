@@ -1,76 +1,81 @@
 package kafka
 
 import (
-	"context"
 	"log"
-	"os"
-	"os/signal"
-	"strings"
+
+	"context"
 
 	"github.com/IBM/sarama"
 )
 
-type Consumer struct {
-	ready chan bool
+type HandlerKafka interface {
+	Start(ctx context.Context, brokers []string, group string, topics []string) error
+	SetConsumer(consumer *ConsumerKafka)
+	HandleBookingCreated(message *sarama.ConsumerMessage)
+	HandleBookingBegin(message *sarama.ConsumerMessage)
+	HandleBookingUpdated(message *sarama.ConsumerMessage)
+	HandleBookingFinished(message *sarama.ConsumerMessage)
+	HandleBookingCancelled(message *sarama.ConsumerMessage)
+	HandleApartmentCreated(message *sarama.ConsumerMessage)
+	HandleApartmentRemoved(message *sarama.ConsumerMessage)
+	HandleApartmentUpdated(message *sarama.ConsumerMessage)
+	HandleCustomerCreated(message *sarama.ConsumerMessage)
+	HandleCustomerRemoved(message *sarama.ConsumerMessage)
+	HandleCustomerUpdated(message *sarama.ConsumerMessage)
 }
 
-func (consumer *Consumer) Setup(sarama.ConsumerGroupSession) error {
-	close(consumer.ready)
+type ConsumerKafka struct {
+	Ready   chan bool
+	handler HandlerKafka
+}
+
+func NewConsumer(handler HandlerKafka) *ConsumerKafka {
+	return &ConsumerKafka{
+		Ready:   make(chan bool),
+		handler: handler,
+	}
+}
+
+func (consumer *ConsumerKafka) Setup(sarama.ConsumerGroupSession) error {
+	close(consumer.Ready)
 	return nil
 }
 
-func (consumer *Consumer) Cleanup(sarama.ConsumerGroupSession) error {
+func (consumer *ConsumerKafka) Cleanup(sarama.ConsumerGroupSession) error {
 	return nil
 }
 
-func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+func (consumer *ConsumerKafka) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for message := range claim.Messages() {
-		log.Printf("Message claimed: value = %s, timestamp = %v, topic = %s", string(message.Value), message.Timestamp, message.Topic)
+		switch message.Topic {
+		case "booking_created":
+			consumer.handler.HandleBookingCreated(message)
+		case "booking_begin":
+			consumer.handler.HandleBookingBegin(message)
+		case "booking_updated":
+			consumer.handler.HandleBookingUpdated(message)
+		case "booking_finished":
+			consumer.handler.HandleBookingFinished(message)
+		case "booking_cancelled":
+			consumer.handler.HandleBookingCancelled(message)
+		case "apartment_created":
+			consumer.handler.HandleApartmentCreated(message)
+		case "apartment_removed":
+			consumer.handler.HandleApartmentRemoved(message)
+		case "apartment_updated":
+			consumer.handler.HandleApartmentUpdated(message)
+		case "customer_created":
+			consumer.handler.HandleCustomerCreated(message)
+		case "customer_removed":
+			consumer.handler.HandleCustomerRemoved(message)
+		case "customer_updated":
+			consumer.handler.HandleCustomerUpdated(message)
+		default:
+			log.Printf("Получено сообщение из неизвестного топика %s: %s", message.Topic, string(message.Value))
+		}
+
+		// Отмечаем сообщение как обработанное
 		session.MarkMessage(message, "")
 	}
 	return nil
-}
-
-func ff() {
-	brokers := "localhost:9092"
-	group := "example_group"
-	topics := "example_topic"
-
-	config := sarama.NewConfig()
-	config.Version = sarama.V2_1_0_0
-
-	consumer := Consumer{
-		ready: make(chan bool),
-	}
-
-	ctx, _ := signal.NotifyContext(context.Background(), os.Interrupt)
-	client, err := sarama.NewConsumerGroup(strings.Split(brokers, ","), group, config)
-	if err != nil {
-		log.Fatalf("Error creating consumer group client: %v", err)
-	}
-	defer func(client sarama.ConsumerGroup) {
-		err := client.Close()
-		if err != nil {
-			log.Fatalf("Error closing client: %v", err)
-		}
-	}(client)
-
-	go func() {
-		for {
-			if err := client.Consume(ctx, strings.Split(topics, ","), &consumer); err != nil {
-				log.Fatalf("Error from consumer: %v", err)
-			}
-			// Check if context was cancelled, signaling that the consumer should stop
-			if ctx.Err() != nil {
-				return
-			}
-			consumer.ready = make(chan bool)
-		}
-	}()
-
-	<-consumer.ready
-	log.Println("Sarama consumer up and running!...")
-
-	<-ctx.Done()
-	log.Println("Terminating: context cancelled")
 }

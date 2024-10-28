@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"log"
 	"service/internal/repository"
 	"service/internal/shared/kafka"
@@ -17,4 +18,12 @@ func NewService(repo *repository.Repository, producer *kafka.Producer) *Service 
 		repo:     repo,
 		producer: producer,
 	}
+}
+
+func (s Service) ProcessBookingCreated(data *BookingCreatedEvent) error {
+	fmt.Println(data)
+
+	//взаимодействие с базой данных
+
+	return nil
 }

@@ -38,3 +38,9 @@ func (p *Producer) ProduceMessage(topic string, message []byte) error {
 
 	return err
 }
+
+func (p *Producer) Close() {
+	if err := p.syncProducer.Close(); err != nil {
+		log.Printf("Ошибка при закрытии Kafka продюсера: %v", err)
+	}
+}
