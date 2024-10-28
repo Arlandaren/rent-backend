@@ -23,4 +23,4 @@ COPY --from=builder /opt/migrations ./migrations
 COPY --from=builder /opt/bin/grpc_server ./
 COPY --from=builder /opt/bin/migrator ./
 
-CMD ["./grpc_server"]
+CMD ["sh", "-c", "./migrator -migrations-path=./migrations && ./grpc_server"]
