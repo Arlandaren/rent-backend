@@ -8,14 +8,14 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"log"
-	"service/internal/shared/config"
+	"service/internal/shared/storage/postgres"
 )
 
 func main() {
 	var migrationsPath, migrationsTable string
 	var down, rollback bool
 
-	cfg, err := config.GetPostgres()
+	cfg, err := postgres.GetConfig()
 	if err != nil {
 		log.Fatalf("Failed to get config: %v", err)
 	}

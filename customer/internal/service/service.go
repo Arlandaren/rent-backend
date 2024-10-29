@@ -2,27 +2,30 @@ package service
 
 import (
 	"context"
-	"customer_service/internal/repository"
-	"customer_service/internal/shared/kafka"
+	"service/internal/repository"
+
+	"service/internal/shared/kafka"
+
 	"encoding/json"
+
 	"log"
 	"strconv"
 )
 
-type CustomerService struct {
-	repo     *repository.CustomerRepository
+type Service struct {
+	repo     *repository.Repository
 	producer *kafka.Producer
 }
 
-func NewCustomerService(repo *repository.CustomerRepository, producer *kafka.Producer) *CustomerService {
-	log.Println("NewCustomerService")
-	return &CustomerService{
+func NewService(repo *repository.Repository, producer *kafka.Producer) *Service {
+	log.Println("Service")
+	return &Service{
 		repo:     repo,
 		producer: producer,
 	}
 }
 
-func (s *CustomerService) New(ctx context.Context, name, phone, passport string) (*repository.Customer, error) {
+func (s *Service) New(ctx context.Context, name, phone, passport string) (*repository.Customer, error) {
 	customer, err := s.repo.New(ctx, name, phone, passport)
 	if err != nil {
 		return nil, err
@@ -53,7 +56,7 @@ func (s *CustomerService) New(ctx context.Context, name, phone, passport string)
 	return customer, nil
 }
 
-func (s *CustomerService) Remove(ctx context.Context, id int) error {
+func (s *Service) Remove(ctx context.Context, id int) error {
 	err := s.repo.Remove(ctx, id)
 	if err != nil {
 		log.Printf("Failed to remove customer: %v", err)
@@ -80,7 +83,7 @@ func (s *CustomerService) Remove(ctx context.Context, id int) error {
 	return nil
 }
 
-func (s *CustomerService) Update(ctx context.Context, id int, name, phone, passport string) error {
+func (s *Service) Update(ctx context.Context, id int, name, phone, passport string) error {
 	err := s.repo.Update(ctx, id, name, phone, passport)
 	if err != nil {
 		log.Printf("Failed to update customer: %v", err)

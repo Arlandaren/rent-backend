@@ -1,8 +1,9 @@
 package main
 
 import (
-	"customer_service/internal/shared/config"
 	"errors"
+	"service/internal/shared/storage/postgres"
+
 	"flag"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
@@ -14,7 +15,7 @@ import (
 func main() {
 	var migrationsPath, migrationsTable string
 
-	cfg, err := config.GetPostgres()
+	cfg, err := postgres.GetConfig()
 	if err != nil {
 		log.Fatalf("Failed to get config: %v", err)
 	}

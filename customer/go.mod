@@ -1,4 +1,4 @@
-module customer_service
+module service
 
 go 1.23.2
 
