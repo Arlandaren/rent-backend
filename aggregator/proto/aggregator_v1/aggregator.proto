@@ -68,32 +68,32 @@ message BookGetResponse {
 }
 
 message CustomerListRequest {
-  string cursor = 1;
+  int64 cursor = 1;
   int32 limit = 2;
 }
 
 message CustomerListResponse {
   repeated Customer customers = 1;
-  string next_cursor = 2;
+  int64 NextCursor = 2;
 }
 
 message ApartmentListRequest {
-  string cursor = 1;
+  int64 cursor = 1;
   int32 limit = 2;
 }
 
 message ApartmentListResponse {
   repeated Apartment apartments = 1;
-  string next_cursor = 2;
+  int64 NextCursor = 2;
 }
 
 message BookListRequest {
-  string cursor = 1;
+  int64 cursor = 1;
   int32 limit = 2;
 }
 
 message BookListResponse {
   repeated Booking bookings = 1;
-  string next_cursor = 2;
+  int64 NextCursor = 2;
 }
 
