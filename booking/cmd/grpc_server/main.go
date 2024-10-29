@@ -5,7 +5,6 @@ import (
 	"service/internal/repository"
 	"service/internal/service"
 
-	"service/internal/shared/config"
 	"service/internal/shared/kafka"
 	"service/internal/shared/storage/postgres"
 
@@ -30,7 +29,7 @@ import (
 const grpcAddress = ":8080"
 
 func main() {
-	postgresCfg, err := config.GetPostgres()
+	postgresCfg, err := postgres.GetConfig()
 	if err != nil {
 		log.Fatalf("Failed to get config: %v", err)
 	}

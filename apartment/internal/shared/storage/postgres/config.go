@@ -1,20 +1,20 @@
-package config
+package postgres
 
 import (
 	"errors"
 	"os"
 )
 
-type PostgresConfig struct {
+type Config struct {
 	ConnStr string
 }
 
-func GetPostgres() (*PostgresConfig, error) {
+func GetConfig() (*Config, error) {
 	pgConn := os.Getenv("PG_STRING")
 	if pgConn == "" {
 		return nil, errors.New("not found PG_STRING")
 	}
-	return &PostgresConfig{
+	return &Config{
 		ConnStr: pgConn,
 	}, nil
 }

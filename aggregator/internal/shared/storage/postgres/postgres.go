@@ -2,15 +2,13 @@ package postgres
 
 import (
 	"context"
-	"service/internal/shared/config"
-
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
 )
 
-func InitPostgres(cfg *config.PostgresConfig, maxRetries int) (*pgxpool.Pool, error) {
+func InitPostgres(cfg *Config, maxRetries int) (*pgxpool.Pool, error) {
 	var retryCount int
 
 	pool, err := pgxpool.New(context.TODO(), cfg.ConnStr)

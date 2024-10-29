@@ -2,15 +2,16 @@ package main
 
 import (
 	"context"
-	"customer_service/internal/repository"
-	"customer_service/internal/service"
-	"customer_service/internal/shared/config"
-	"customer_service/internal/shared/kafka"
-	"customer_service/internal/shared/storage/postgres"
+	"service/internal/repository"
+	"service/internal/service"
+	"service/internal/shared/kafka"
+	"service/internal/shared/storage/postgres"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+
 	"os"
 	"os/signal"
 	"sync"
@@ -18,15 +19,15 @@ import (
 
 	"google.golang.org/grpc/credentials/insecure"
 
-	transport "customer_service/internal/transport/grpc"
+	transport "service/internal/transport/grpc"
 
-	desc "customer_service/pkg/grpc/customer_v1"
+	desc "service/pkg/grpc/customer_v1"
 )
 
 const grpcAddress = ":8080"
 
 func main() {
-	postgresCfg, err := config.GetPostgres()
+	postgresCfg, err := postgres.GetConfig()
 	if err != nil {
 		log.Fatalf("Failed to get config: %v", err)
 	}
@@ -39,15 +40,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to Postgres: %v", err)
 	}
+
 	defer dbPool.Close()
 
 	pgxWrapper := postgres.NewWrapper(dbPool)
 
-	customerRepository := repository.NewCustomerRepository(pgxWrapper)
+	appRepository := repository.NewRepository(pgxWrapper)
 
-	customerService := service.NewCustomerService(customerRepository, kafkaProducer)
+	appService := service.NewService(appRepository, kafkaProducer)
 
-	customerServer := transport.NewCustomerServer(customerService)
+	appServer := transport.NewServer(appService)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -57,7 +59,7 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		if err := startGrpcServer(ctx, customerServer); err != nil {
+		if err := startGrpcServer(ctx, appServer); err != nil {
 			log.Fatalf("Failed to start gRPC server: %v", err)
 		}
 	}()
@@ -72,14 +74,14 @@ func main() {
 	log.Println("Server gracefully stopped.")
 }
 
-func startGrpcServer(ctx context.Context, customerServer *transport.CustomerServer) error {
+func startGrpcServer(ctx context.Context, appServer *transport.Server) error {
 	grpcServer := grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
 	)
 
 	reflection.Register(grpcServer)
 
-	desc.RegisterCustomerServiceServer(grpcServer, customerServer)
+	desc.RegisterCustomerServiceServer(grpcServer, appServer)
 
 	list, err := net.Listen("tcp", grpcAddress)
 	if err != nil {

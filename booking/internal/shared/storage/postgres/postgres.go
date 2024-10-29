@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	"service/internal/shared/config"
+	"os"
 
 	"errors"
 	"fmt"
@@ -10,7 +10,21 @@ import (
 	"time"
 )
 
-func InitPostgres(cfg *config.PostgresConfig, maxRetries int) (*pgxpool.Pool, error) {
+type Config struct {
+	ConnStr string
+}
+
+func GetConfig() (*Config, error) {
+	pgConn := os.Getenv("PG_STRING")
+	if pgConn == "" {
+		return nil, errors.New("not found PG_STRING")
+	}
+	return &Config{
+		ConnStr: pgConn,
+	}, nil
+}
+
+func InitPostgres(cfg *Config, maxRetries int) (*pgxpool.Pool, error) {
 	var retryCount int
 
 	pool, err := pgxpool.New(context.TODO(), cfg.ConnStr)

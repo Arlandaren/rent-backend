@@ -106,7 +106,7 @@ services:
     volumes:
       - pg_booking_data:/var/lib/postgresql/data/pgdata
     ports:
-      - "5438:5432"
+      - "5433:5432"
 
   aggregator_db:
     image: postgres:latest
@@ -117,7 +117,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - pg_booking_data:/var/lib/postgresql/data/pgdata
+      - pg_aggregator_data:/var/lib/postgresql/data/pgdata
     ports:
       - "5439:5432"
 
@@ -163,4 +163,5 @@ volumes:
   pg_customer_data:
   pg_apartment_data:
   pg_booking_data:
+  pg_aggregator_data:
 

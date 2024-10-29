@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"service/internal/repository"
 	"service/internal/service"
-	"service/internal/shared/config"
 	"service/internal/shared/kafka"
 	"service/internal/shared/storage/postgres"
 	"sync"
@@ -31,7 +30,7 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 
-	postgresCfg, err := config.GetPostgres()
+	postgresCfg, err := postgres.GetConfig()
 	if err != nil {
 		log.Fatalf("Failed to get config: %v", err)
 	}
