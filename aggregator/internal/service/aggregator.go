@@ -84,6 +84,7 @@ func (aggregator *Aggregator) HandleBookingCreated(message *sarama.ConsumerMessa
 	}
 
 	err = aggregator.service.ProcessBookingCreated(&data)
+
 	if err != nil {
 		log.Printf("handle error booking_created: %v", err)
 	}
