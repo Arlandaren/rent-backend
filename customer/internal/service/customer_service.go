@@ -33,8 +33,9 @@ func (s *CustomerService) New(ctx context.Context, name, phone, passport string)
 		"name":     name,
 		"phone":    phone,
 		"passport": passport,
-		"created":  customer.CreatedAt.String(),
+		"created":  strconv.FormatInt(customer.CreatedAt.Unix(), 10),
 	}
+
 	message, err := json.Marshal(event)
 	if err != nil {
 		log.Printf("Failed to marshal event: %v", err)
@@ -48,6 +49,7 @@ func (s *CustomerService) New(ctx context.Context, name, phone, passport string)
 	}
 
 	log.Println("NewCustomer")
+
 	return customer, nil
 }
 
@@ -61,17 +63,20 @@ func (s *CustomerService) Remove(ctx context.Context, id int) error {
 	event := map[string]string{
 		"id": strconv.Itoa(id),
 	}
+
 	message, err := json.Marshal(event)
 	if err != nil {
 		log.Printf("Failed to marshal event: %v", err)
 		return err
 	}
+
 	err = s.producer.ProduceMessage("customer_removed", message)
 	if err != nil {
 		return err
 	}
 
 	log.Println("RemoveCustomer")
+
 	return nil
 }
 
@@ -81,22 +86,26 @@ func (s *CustomerService) Update(ctx context.Context, id int, name, phone, passp
 		log.Printf("Failed to update customer: %v", err)
 		return err
 	}
+
 	event := map[string]string{
 		"id":       strconv.Itoa(id),
 		"name":     name,
 		"phone":    phone,
 		"passport": passport,
 	}
+
 	message, err := json.Marshal(event)
 	if err != nil {
 		log.Printf("Failed to marshal event: %v", err)
 		return err
 	}
+
 	err = s.producer.ProduceMessage("customer_updated", message)
 	if err != nil {
 		return err
 	}
 
 	log.Println("UpdateCustomer")
+
 	return nil
 }
