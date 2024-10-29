@@ -33,12 +33,12 @@ func (s *Service) New(ctx context.Context, req *desc.NewBookingRequest) (*desc.B
 	event := map[string]string{
 		"id":           strconv.Itoa(int(booking.Id)),
 		"apartment_id": strconv.Itoa(int(booking.ApartmentId)),
-		"date_start":   booking.DateStart.String(),
-		"date_end":     booking.DateEnd.String(),
+		"date_start":   strconv.FormatInt(booking.DateStart.Seconds, 10),
+		"date_end":     strconv.FormatInt(booking.DateEnd.Seconds, 10),
 		"price":        strconv.Itoa(int(booking.Price)),
 		"customer_id":  strconv.Itoa(int(booking.CustomerId)),
 		"status":       booking.Status,
-		"date_created": booking.DateCreated.String(),
+		"date_created": strconv.FormatInt(booking.DateCreated.Seconds, 10),
 		"comment":      booking.Comment,
 	}
 
@@ -67,7 +67,7 @@ func (s *Service) Begin(ctx context.Context, req *desc.BeginBookingRequest) (*de
 
 	event := map[string]string{
 		"id":         strconv.Itoa(int(req.Id)),
-		"date_start": date.String(),
+		"date_start": strconv.FormatInt(date.Unix(), 10),
 	}
 
 	msg, err := json.Marshal(event)
@@ -95,11 +95,9 @@ func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*
 		return nil, err
 	}
 
-	log.Println("Booking finished")
-
 	event := map[string]string{
 		"id":       strconv.Itoa(int(req.Id)),
-		"date_end": date.String(),
+		"date_end": strconv.FormatInt(date.Unix(), 10),
 	}
 
 	msg, err := json.Marshal(event)
@@ -116,6 +114,8 @@ func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*
 		Id:      req.Id,
 		DateEnd: timestamppb.New(date),
 	}
+
+	log.Println("Booking finished")
 
 	return response, nil
 }
