@@ -5,9 +5,10 @@ services:
     image: nginx:latest
     restart: always
     volumes:
-      - ./nginx.grpc.conf:/etc/nginx/nginx.conf
+      - ./nginx.both.conf:/etc/nginx/nginx.conf
     ports:
-      - 8080:80
+      - "8081:81"
+      - "8080:80"
     depends_on:
       - customer_service
       - apartment_service
@@ -25,7 +26,8 @@ services:
       - kafka
     restart: always
     ports:
-      - "8081:8080"
+      - "8090:50051"
+      - "9000:8086"
 
   apartment_service:
     build: ./apartment
@@ -39,7 +41,8 @@ services:
       - kafka
     restart: always
     ports:
-      - "8082:8080"
+      - "8091:50051"
+      - "9001:8086"
 
   booking_service:
     build: ./booking
@@ -53,7 +56,8 @@ services:
       - kafka
     restart: always
     ports:
-      - "8083:8080"
+      - "8092:50051"
+      - "9002:8086"
 
   aggregator_service:
     build: ./aggregator
@@ -67,7 +71,8 @@ services:
       - kafka
     restart: always
     ports:
-      - "8084:8080"
+      - "8093:50051"
+      - "9003:8086"
 
   customer_db:
     image: postgres:latest
@@ -147,7 +152,7 @@ services:
     image: tchiotludo/akhq:latest
     container_name: akhq
     ports:
-      - "8091:8080"
+      - "8070:8080"
     environment:
       AKHQ_CONFIGURATION: |
         akhq:

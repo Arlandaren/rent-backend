@@ -3,6 +3,7 @@ syntax = "proto3";
 package apartment_v1;
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 option go_package = "service/pkg/grpc/apartment_v1";
 
@@ -15,9 +16,23 @@ message Apartment {
 }
 
 service ApartmentService {
-  rpc NewApartment(NewApartmentRequest) returns (NewApartmentResponse) {}
-  rpc UpdateApartment(UpdateApartmentRequest) returns (UpdateApartmentResponse) {}
-  rpc RemoveApartment(RemoveApartmentRequest) returns (RemoveApartmentResponse) {}
+  rpc NewApartment(NewApartmentRequest) returns (NewApartmentResponse) {
+    option (google.api.http) = {
+      post: "/v1/apartments"
+      body: "*"
+    };
+  }
+  rpc UpdateApartment(UpdateApartmentRequest) returns (UpdateApartmentResponse) {
+    option (google.api.http) = {
+      put: "/v1/apartments/{id}"
+      body: "*"
+    };
+  }
+  rpc RemoveApartment(RemoveApartmentRequest) returns (RemoveApartmentResponse) {
+    option (google.api.http) = {
+      delete: "/v1/apartments/{id}"
+    };
+  }
 }
 
 message NewApartmentRequest {

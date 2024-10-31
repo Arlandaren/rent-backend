@@ -2,15 +2,19 @@ package main
 
 import (
 	"context"
-	"service/internal/repository"
-	"service/internal/service"
-	"service/internal/shared/kafka"
-	"service/internal/shared/storage/postgres"
-
+	"errors"
+	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"net/http"
+	"service/internal/repository"
+	"service/internal/service"
+	"service/internal/shared/kafka"
+	"service/internal/shared/storage/postgres"
+	"time"
 
 	"os"
 	"os/signal"
@@ -24,7 +28,10 @@ import (
 	desc "service/pkg/grpc/customer_v1"
 )
 
-const grpcAddress = ":8080"
+const (
+	grpcAddress = ":50051"
+	httpAddress = ":8086"
+)
 
 func main() {
 	postgresCfg, err := postgres.GetConfig()
@@ -35,6 +42,9 @@ func main() {
 	kafkaCfg := kafka.NewConfig([]string{os.Getenv("KAFKA_BROKER_ADDRESS")})
 
 	kafkaProducer, err := kafka.NewProducer(kafkaCfg)
+	if err != nil {
+		log.Fatalf("Failed to create Kafka producer: %v", err)
+	}
 
 	dbPool, err := postgres.InitPostgres(postgresCfg, 5)
 	if err != nil {
@@ -55,7 +65,7 @@ func main() {
 	defer cancel()
 
 	wg := &sync.WaitGroup{}
-	wg.Add(1)
+	wg.Add(2)
 
 	go func() {
 		defer wg.Done()
@@ -63,7 +73,12 @@ func main() {
 			log.Fatalf("Failed to start gRPC server: %v", err)
 		}
 	}()
-
+	go func() {
+		defer wg.Done()
+		if err := startHttpServer(ctx); err != nil {
+			log.Fatalf("Failed to start HTTP server: %v", err)
+		}
+	}()
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
@@ -89,13 +104,55 @@ func startGrpcServer(ctx context.Context, appServer *transport.Server) error {
 	}
 
 	go func() {
-		if err := grpcServer.Serve(list); err != nil {
-			log.Fatalf("gRPC server failed: %v", err)
+		if err := grpcServer.Serve(list); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			log.Printf("gRPC server failed: %v", err)
 		}
 	}()
 
+	log.Printf("gRPC server listening at %v\n", grpcAddress)
+
 	<-ctx.Done()
 
+	log.Println("Shutting down gRPC server...")
 	grpcServer.GracefulStop()
+	return nil
+}
+
+func startHttpServer(ctx context.Context) error {
+	mux := runtime.NewServeMux()
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	err := desc.RegisterCustomerServiceHandlerFromEndpoint(ctx, mux, grpcAddress, opts)
+	if err != nil {
+		return fmt.Errorf("failed to register service handler: %w", err)
+	}
+
+	srv := &http.Server{
+		Addr:    httpAddress,
+		Handler: mux,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("HTTP server exited with error: %v", err)
+		}
+	}()
+
+	log.Printf("HTTP server listening at %v\n", httpAddress)
+
+	<-ctx.Done()
+
+	log.Println("Shutting down HTTP server...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		return fmt.Errorf("HTTP server Shutdown failed: %w", err)
+	}
+
 	return nil
 }

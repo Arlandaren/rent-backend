@@ -5,7 +5,9 @@ go 1.23.2
 require (
 	github.com/IBM/sarama v1.43.3
 	github.com/golang-migrate/migrate/v4 v4.18.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0
 	github.com/jackc/pgx/v5 v5.7.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.35.1
 )
