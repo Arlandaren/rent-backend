@@ -12,7 +12,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data/pgdata
     ports:
-      - "5436:5432"
+      - "5433:5432"
 
   server:
     build: .
@@ -26,7 +26,8 @@ services:
       - kafka
     restart: always
     ports:
-      - "8081:8080"
+      - "8090:50051"
+      - "8086:8086"
 
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
@@ -54,7 +55,7 @@ services:
     image: tchiotludo/akhq:latest
     container_name: akhq
     ports:
-      - "8080:8080"
+      - "8091:8080"
     environment:
       AKHQ_CONFIGURATION: |
         akhq:

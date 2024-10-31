@@ -1,6 +1,9 @@
 syntax = "proto3";
+
 package booking_v1;
+
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 option go_package = "service/pkg/grpc/booking_v1";
 
@@ -17,11 +20,37 @@ message Booking {
 }
 
 service BookingService {
-  rpc NewBooking(NewBookingRequest) returns (Booking) {}
-  rpc UpdateBooking(UpdateBookingRequest) returns (UpdateBookingResponse) {}
-  rpc BeginBooking(BeginBookingRequest) returns (BeginBookingResponse) {}
-  rpc FinishBooking(FinishBookingRequest) returns (FinishBookingResponse) {}
-  rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse) {}
+  rpc NewBooking(NewBookingRequest) returns (Booking) {
+    option (google.api.http) = {
+      post: "/v1/bookings"
+      body: "*"
+    };
+  }
+
+  rpc UpdateBooking(UpdateBookingRequest) returns (UpdateBookingResponse) {
+    option (google.api.http) = {
+      put: "/v1/bookings/{id}"
+      body: "*"
+    };
+  }
+  rpc BeginBooking(BeginBookingRequest) returns (BeginBookingResponse) {
+    option (google.api.http) = {
+      post: "/v1/bookings/{id}:begin"
+      body: "*"
+    };
+  }
+  rpc FinishBooking(FinishBookingRequest) returns (FinishBookingResponse) {
+    option (google.api.http) = {
+      post: "/v1/bookings/{id}:finish"
+      body: "*"
+    };
+  }
+  rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse) {
+    option (google.api.http) = {
+      post: "/v1/bookings/{id}:cancel"
+      body: "*"
+    };
+  }
 }
 
 message BeginBookingRequest {

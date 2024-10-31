@@ -23,3 +23,24 @@ tasks:
         --go_out=pkg/grpc/customer_v1 --go_opt=paths=source_relative \
         --go-grpc_out=pkg/grpc/customer_v1 --go-grpc_opt=paths=source_relative \
         proto/customer_v1/customer.proto
+
+  generate-gateway-api:
+    cmds:
+      - powershell -Command "if (-Not (Test-Path -Path 'pkg/grpc/customer_v1')) { New-Item -ItemType Directory -Path 'pkg/grpc/customer_v1' }"
+      - |
+        protoc --proto_path proto/customer_v1 --proto_path ../external \
+        --go_out=pkg/grpc/customer_v1 --go_opt=paths=source_relative \
+        --go-grpc_out=pkg/grpc/customer_v1 --go-grpc_opt=paths=source_relative \
+        --grpc-gateway_out=pkg/grpc/customer_v1 --grpc-gateway_opt=paths=source_relative \
+        proto/customer_v1/customer.proto
+
+  vendor-proto:
+    desc: "Клонировать googleapis, если не существует vendor.protogen/google"
+    cmds:
+      - git clone https://github.com/googleapis/googleapis vendor.protogen/googleapis
+      - mkdir vendor.protogen/google
+      - move vendor.protogen/googleapis/google/api vendor.protogen/google
+      - rm -rf vendor.protogen/googleapis
+    preconditions:
+      - not:
+          dir: vendor.protogen/google

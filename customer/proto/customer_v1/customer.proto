@@ -3,6 +3,7 @@ syntax = "proto3";
 package customer_v1;
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 option go_package = "customer_service/pkg/grpc/customer_v1;customer_v1";
 
@@ -15,9 +16,41 @@ message Customer {
 }
 
 service CustomerService {
-  rpc NewCustomer(customer_v1.NewCustomerRequest) returns (customer_v1.NewCustomerResponse) {}
-  rpc RemoveCustomer(customer_v1.RemoveCustomerRequest) returns (customer_v1.RemoveCustomerResponse) {}
-  rpc UpdateCustomer(customer_v1.UpdateCustomerRequest) returns (customer_v1.UpdateCustomerResponse) {}
+  rpc NewCustomer (NewCustomerRequest) returns (NewCustomerResponse) {
+    option (google.api.http) = {
+      post: "/v1/customers"
+      body: "*"
+    };
+  }
+  rpc RemoveCustomer (RemoveCustomerRequest) returns (RemoveCustomerResponse) {
+    option (google.api.http) = {
+      delete: "/v1/customers/{id}"
+    };
+  }
+  rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerResponse) {
+    option (google.api.http) = {
+      put: "/v1/customers/{id}"
+      body: "*"
+    };
+  }
+}
+
+message NewCustomerRequest {
+  string name = 1;
+  string phone = 2;
+  string passport = 3;
+}
+
+message NewCustomerResponse {
+  Customer customer = 1;
+}
+
+message RemoveCustomerRequest {
+  int64 id = 1;
+}
+
+message RemoveCustomerResponse {
+  bool success = 1;
 }
 
 message UpdateCustomerRequest {
@@ -29,22 +62,4 @@ message UpdateCustomerRequest {
 
 message UpdateCustomerResponse {
   bool success = 1;
-}
-
-message RemoveCustomerRequest {
-  int64 id = 1;
-}
-
-message RemoveCustomerResponse {
-  bool success = 1;
-}
-
-message NewCustomerRequest {
-  string name = 2;
-  string phone = 3;
-  string passport = 4;
-}
-
-message NewCustomerResponse {
-  customer_v1.Customer customer = 1;
 }

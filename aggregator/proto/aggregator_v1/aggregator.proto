@@ -4,6 +4,7 @@ package aggregator_v1;
 
 option go_package = "service/pkg/grpc/aggregator_v1";
 
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 message Customer {
@@ -35,12 +36,36 @@ message Booking {
 }
 
 service Aggregator {
-  rpc CustomerGet(CustomerGetRequest) returns (CustomerGetResponse) {}
-  rpc CustomerList(CustomerListRequest) returns (CustomerListResponse) {}
-  rpc ApartmentGet(ApartmentGetRequest) returns (ApartmentGetResponse) {}
-  rpc ApartmentList(ApartmentListRequest) returns (ApartmentListResponse) {}
-  rpc BookingGet(BookGetRequest) returns (BookGetResponse) {}
-  rpc BookingList(BookListRequest) returns (BookListResponse) {}
+  rpc CustomerGet(CustomerGetRequest) returns (CustomerGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/agr/customers/{id}"
+    };
+  }
+  rpc CustomerList(CustomerListRequest) returns (CustomerListResponse) {
+    option (google.api.http) = {
+      get: "/v1/agr/customers"
+    };
+  }
+  rpc ApartmentGet(ApartmentGetRequest) returns (ApartmentGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/agr/apartments/{id}"
+    };
+  }
+  rpc ApartmentList(ApartmentListRequest) returns (ApartmentListResponse) {
+    option (google.api.http) = {
+      get: "/v1/agr/apartments"
+    };
+  }
+  rpc BookingGet(BookGetRequest) returns (BookGetResponse) {
+    option (google.api.http) = {
+      get: "/v1/agr/bookings/{id}"
+    };
+  }
+  rpc BookingList(BookListRequest) returns (BookListResponse) {
+    option (google.api.http) = {
+      get: "/v1/agr/bookings"
+    };
+  }
 }
 
 message CustomerGetRequest {

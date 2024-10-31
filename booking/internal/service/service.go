@@ -18,6 +18,11 @@ type Service struct {
 
 func NewService(repo *repository.Repository, producer *kafka.Producer) *Service {
 	log.Println("NewService")
+
+	if producer == nil {
+		log.Fatal("producer is nil")
+	}
+
 	return &Service{
 		repo:     repo,
 		producer: producer,
