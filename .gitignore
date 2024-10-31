@@ -1,4 +1,5 @@
 ./.idea
 **/.idea/
 .env
-./extrnal
+external/
+**/external/
