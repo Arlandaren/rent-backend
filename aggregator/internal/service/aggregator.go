@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/IBM/sarama"
 	"log"
+	"service/internal/shared/entities"
 	"service/internal/shared/kafka"
 )
 
@@ -76,7 +77,8 @@ func (aggregator *Aggregator) Start(ctx context.Context, brokers []string, group
 }
 
 func (aggregator *Aggregator) HandleBookingCreated(message *sarama.ConsumerMessage) {
-	var data BookingCreatedEvent
+	var data entities.BookingCreatedEvent
+
 	err := json.Unmarshal(message.Value, &data)
 	if err != nil {
 		log.Printf("decode error booking_created: %v", err)

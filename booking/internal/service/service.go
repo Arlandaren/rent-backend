@@ -35,16 +35,16 @@ func (s *Service) New(ctx context.Context, req *desc.NewBookingRequest) (*desc.B
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":           strconv.Itoa(int(booking.Id)),
-		"apartment_id": strconv.Itoa(int(booking.ApartmentId)),
-		"date_start":   strconv.FormatInt(booking.DateStart.Seconds, 10),
-		"date_end":     strconv.FormatInt(booking.DateEnd.Seconds, 10),
-		"price":        strconv.Itoa(int(booking.Price)),
-		"customer_id":  strconv.Itoa(int(booking.CustomerId)),
-		"status":       booking.Status,
-		"date_created": strconv.FormatInt(booking.DateCreated.Seconds, 10),
-		"comment":      booking.Comment,
+	event := bookingCreatedEvent{
+		ID:          booking.Id,
+		ApartmentID: booking.ApartmentId,
+		DateStart:   booking.DateStart.Seconds,
+		DateEnd:     booking.DateEnd.Seconds,
+		Price:       booking.Price,
+		CustomerID:  booking.CustomerId,
+		Status:      booking.Status,
+		DateCreated: booking.DateCreated.Seconds,
+		Comment:     booking.Comment,
 	}
 
 	msg, err := json.Marshal(event)
