@@ -9,9 +9,10 @@ RUN go mod download && go mod verify
 
 COPY .. .
 
-RUN go build -o bin/grpc_server cmd/grpc_server/main.go
+RUN go build -o bin/grpc_server ./cmd/grpc_server
 
-RUN go build -o bin/migrator cmd/migrator/main.go
+RUN go build -o bin/migrator ./cmd/migrator/main.go
+
 
 FROM alpine AS runner
 
