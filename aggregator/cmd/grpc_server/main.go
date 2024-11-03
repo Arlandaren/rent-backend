@@ -162,7 +162,7 @@ func startHttpServer(ctx context.Context) error {
 		return fmt.Errorf("failed to register service handler: %w", err)
 	}
 
-	handler := allowCORS(mux)
+	handler := AllowCORS(mux)
 
 	srv := &http.Server{
 		Addr:    httpAddress,

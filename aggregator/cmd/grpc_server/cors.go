@@ -2,7 +2,7 @@ package main
 
 import "net/http"
 
-func allowCORS(h http.Handler) http.Handler {
+func AllowCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*") // Настройте по необходимости*
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
