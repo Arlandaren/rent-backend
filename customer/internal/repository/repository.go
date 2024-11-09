@@ -14,7 +14,7 @@ type Repository struct {
 }
 
 type Customer struct {
-	ID        int
+	ID        int64
 	Name      string
 	Phone     string
 	Passport  string
@@ -29,7 +29,7 @@ func NewRepository(wrapper *postgres.Wrapper) *Repository {
 }
 
 func (c *Repository) New(ctx context.Context, name, phone, passport string) (*Customer, error) {
-	var id int
+	var id int64
 	var createdAt time.Time
 	query := "INSERT INTO customers (name, phone, passport) VALUES ($1, $2, $3) RETURNING id, created_at"
 
@@ -50,7 +50,7 @@ func (c *Repository) New(ctx context.Context, name, phone, passport string) (*Cu
 	return customer, nil
 }
 
-func (c *Repository) Remove(ctx context.Context, id int) error {
+func (c *Repository) Remove(ctx context.Context, id int64) error {
 	_, err := c.db.Exec(ctx, "DELETE FROM customers WHERE id = $1", id)
 	if err != nil {
 		log.Println("Failed to remove customer: ", err)
@@ -60,7 +60,7 @@ func (c *Repository) Remove(ctx context.Context, id int) error {
 	return nil
 }
 
-func (c *Repository) Update(ctx context.Context, id int, name, phone, passport string) error {
+func (c *Repository) Update(ctx context.Context, id int64, name, phone, passport string) error {
 	_, err := c.db.Exec(ctx, "UPDATE customers SET name = $1, phone = $2, passport = $3 WHERE id = $4", name, phone, passport, id)
 	if err != nil {
 		return err
