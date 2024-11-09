@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"service/internal/shared/entities"
 	"time"
 )
@@ -48,6 +49,23 @@ func (r *Repository) NewBooking(ctx context.Context, booking *entities.BookingCr
 		"UPDATE apartment SET status = 'active' WHERE id = $1", booking.ApartmentID)
 	if err != nil {
 		return fmt.Errorf("Ошибка обновления статуса апартамента: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) NewApartment(ctx context.Context, apartment *entities.ApartmentCreatedEvent) error {
+	_, err := r.db.Exec(ctx,
+		`INSERT INTO apartment
+		(id, address, status, date_created)
+		VALUES ($1, $2, $3, $4)`,
+		apartment.ID,
+		apartment.Address,
+		apartment.Status,
+		time.Unix(apartment.DateCreated, 0),
+	)
+	if err != nil {
+		return fmt.Errorf("Ошибка вставки апартамента: %w", err)
 	}
 
 	return nil

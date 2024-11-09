@@ -93,51 +93,51 @@ func (aggregator *Aggregator) HandleBookingCreated(message *sarama.ConsumerMessa
 }
 
 func (aggregator *Aggregator) HandleBookingBegin(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling booking_begin: %s\n", string(message.Value))
+	fmt.Printf("handling booking_begin: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleBookingUpdated(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling booking_updated: %s\n", string(message.Value))
+	fmt.Printf("handling booking_updated: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleBookingFinished(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling booking_finished: %s\n", string(message.Value))
+	fmt.Printf("handling booking_finished: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleBookingCancelled(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling booking_cancelled: %s\n", string(message.Value))
+	fmt.Printf("handling booking_cancelled: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleApartmentCreated(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling apartment_created: %s\n", string(message.Value))
+	fmt.Printf("handling apartment_created: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleApartmentRemoved(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling apartment_removed: %s\n", string(message.Value))
+	fmt.Printf("handling apartment_removed: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleApartmentUpdated(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling apartment_updated: %s\n", string(message.Value))
+	fmt.Printf("handling apartment_updated: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleCustomerCreated(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling customer_created: %s\n", string(message.Value))
+	fmt.Printf("handling customer_created: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleCustomerRemoved(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling customer_removed: %s\n", string(message.Value))
+	fmt.Printf("handling customer_removed: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
 
 func (aggregator *Aggregator) HandleCustomerUpdated(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling customer_updated: %s\n", string(message.Value))
+	fmt.Printf("handling customer_updated: %aggregator\n", string(message.Value))
 	// Здесь добавь
 }
