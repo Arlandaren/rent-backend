@@ -48,7 +48,7 @@ func (s *Server) NewCustomer(ctx context.Context, req *desc.NewCustomerRequest) 
 }
 
 func (s *Server) RemoveCustomer(ctx context.Context, req *desc.RemoveCustomerRequest) (*desc.RemoveCustomerResponse, error) {
-	err := s.service.Remove(ctx, int(req.GetId()))
+	err := s.service.Remove(ctx, req.GetId())
 	if err != nil {
 		log.Printf("Failed to remove customer: %v\n", err)
 		return nil, status.Errorf(codes.Internal, "failed to remove customer: %v", err)
@@ -57,7 +57,7 @@ func (s *Server) RemoveCustomer(ctx context.Context, req *desc.RemoveCustomerReq
 }
 
 func (s *Server) UpdateCustomer(ctx context.Context, req *desc.UpdateCustomerRequest) (*desc.UpdateCustomerResponse, error) {
-	err := s.service.Update(ctx, int(req.GetId()), req.GetName(), req.GetPhone(), req.GetPassport())
+	err := s.service.Update(ctx, req.GetId(), req.GetName(), req.GetPhone(), req.GetPassport())
 	if err != nil {
 		log.Printf("Failed to update customer: %v\n", err)
 		return nil, status.Errorf(codes.Internal, "failed to update customer: %v", err)
