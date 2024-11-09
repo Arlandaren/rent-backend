@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"service/internal/repository"
+	"service/internal/shared/entities"
 
 	"service/internal/shared/kafka"
 
 	"encoding/json"
 
 	"log"
-	"strconv"
 )
 
 type Service struct {
@@ -34,12 +34,12 @@ func (s *Service) New(ctx context.Context, name, phone, passport string) (*repos
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":       strconv.Itoa(customer.ID),
-		"name":     name,
-		"phone":    phone,
-		"passport": passport,
-		"created":  strconv.FormatInt(customer.CreatedAt.Unix(), 10),
+	event := entities.CustomerCreatedEvent{
+		ID:        customer.ID,
+		Name:      customer.Name,
+		Phone:     customer.Phone,
+		Passport:  customer.Passport,
+		CreatedAt: customer.CreatedAt.Unix(),
 	}
 
 	message, err := json.Marshal(event)
@@ -59,15 +59,15 @@ func (s *Service) New(ctx context.Context, name, phone, passport string) (*repos
 	return customer, nil
 }
 
-func (s *Service) Remove(ctx context.Context, id int) error {
+func (s *Service) Remove(ctx context.Context, id int64) error {
 	err := s.repo.Remove(ctx, id)
 	if err != nil {
 		log.Printf("Failed to remove customer: %v", err)
 		return err
 	}
 
-	event := map[string]string{
-		"id": strconv.Itoa(id),
+	event := entities.CustomerRemovedEvent{
+		ID: id,
 	}
 
 	message, err := json.Marshal(event)
@@ -86,18 +86,18 @@ func (s *Service) Remove(ctx context.Context, id int) error {
 	return nil
 }
 
-func (s *Service) Update(ctx context.Context, id int, name, phone, passport string) error {
+func (s *Service) Update(ctx context.Context, id int64, name, phone, passport string) error {
 	err := s.repo.Update(ctx, id, name, phone, passport)
 	if err != nil {
 		log.Printf("Failed to update customer: %v", err)
 		return err
 	}
 
-	event := map[string]string{
-		"id":       strconv.Itoa(id),
-		"name":     name,
-		"phone":    phone,
-		"passport": passport,
+	event := entities.CustomerUpdatedEvent{
+		ID:       id,
+		Name:     name,
+		Phone:    phone,
+		Passport: passport,
 	}
 
 	message, err := json.Marshal(event)

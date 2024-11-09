@@ -1,6 +1,6 @@
-package service
+package entities
 
-type bookingCreatedEvent struct {
+type BookingCreatedEvent struct {
 	ID          int64  `json:"id"`
 	ApartmentID int64  `json:"apartment_id"`
 	DateEnd     int64  `json:"date_end"`   // UNIX timestamp в секундах
@@ -12,12 +12,12 @@ type bookingCreatedEvent struct {
 	Comment     string `json:"comment"`
 }
 
-type bookingBeganEvent struct {
+type BookingBeganEvent struct {
 	ID        int64 `json:"id"`
 	DateStart int64 `json:"date_start"`
 }
 
-type bookingUpdatedEvent struct {
+type BookingUpdatedEvent struct {
 	ID          int64  `json:"id"`
 	ApartmentID int64  `json:"apartment_id"`
 	Price       int64  `json:"price"`
@@ -25,7 +25,12 @@ type bookingUpdatedEvent struct {
 	Comment     string `json:"comment"`
 }
 
-type bookingFinishedEvent struct {
-	ID     int
-	Status string
+type BookingFinishedEvent struct {
+	ID      int64 `json:"id"`
+	DateEnd int64 `json:"date_end"`
+}
+
+type BookingCancelledEvent struct {
+	ID     int64  `json:"id"`
+	Status string `json:"status"`
 }
