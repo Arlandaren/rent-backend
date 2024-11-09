@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"service/internal/repository"
+	"service/internal/shared/entities"
 	"service/internal/shared/kafka"
-	"strconv"
 )
 
 type Service struct {
@@ -34,12 +34,11 @@ func (s *Service) New(ctx context.Context, title string, expenses int64) (*repos
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":         strconv.FormatInt(apartment.ID, 10),
-		"title":      apartment.Title,
-		"expenses":   strconv.FormatInt(apartment.Expenses, 10),
-		"status":     apartment.Status,
-		"created_at": strconv.FormatInt(apartment.CreatedAt.Unix(), 10),
+	event := entities.ApartmentCreatedEvent{
+		ID:        apartment.ID,
+		Title:     apartment.Title,
+		Expenses:  apartment.Expenses,
+		CreatedAt: apartment.CreatedAt.Unix(),
 	}
 
 	message, err := json.Marshal(event)
@@ -63,8 +62,8 @@ func (s *Service) Remove(ctx context.Context, id int64) error {
 		return err
 	}
 
-	event := map[string]string{
-		"id": strconv.FormatInt(id, 10),
+	event := entities.ApartmentRemovedEvent{
+		ID: id,
 	}
 
 	msg, err := json.Marshal(event)
@@ -89,11 +88,11 @@ func (s *Service) Update(ctx context.Context, id, expenses int64, status, title 
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":       strconv.FormatInt(apartment.ID, 10),
-		"title":    apartment.Title,
-		"status":   apartment.Status,
-		"expenses": strconv.FormatInt(apartment.Expenses, 10),
+	event := entities.ApartmentUpdatedEvent{
+		ID:       id,
+		Title:    title,
+		Status:   status,
+		Expenses: expenses,
 	}
 
 	message, err := json.Marshal(event)
