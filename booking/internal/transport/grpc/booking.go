@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"service/internal/service"
+
 	desc "service/pkg/grpc/booking_v1"
 )
 
