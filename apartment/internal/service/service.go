@@ -38,6 +38,7 @@ func (s *Service) New(ctx context.Context, title string, expenses int64) (*repos
 		ID:        apartment.ID,
 		Title:     apartment.Title,
 		Expenses:  apartment.Expenses,
+		Status:    apartment.Status,
 		CreatedAt: apartment.CreatedAt.Unix(),
 	}
 
