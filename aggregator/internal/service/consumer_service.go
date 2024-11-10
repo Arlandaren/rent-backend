@@ -3,15 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/IBM/sarama"
 	"log"
 	"service/internal/shared/entities"
 )
 
-func (s *Service) ProcessBookingCreated(data *entities.BookingCreatedEvent) error {
+func (s *Service) ProcessBookingCreated(ctx context.Context, data *entities.BookingCreatedEvent) error {
 	log.Println("event booking_created")
-
-	ctx := context.Background()
 
 	err := s.repo.NewBooking(ctx, data)
 	if err != nil {
@@ -24,63 +21,128 @@ func (s *Service) ProcessBookingCreated(data *entities.BookingCreatedEvent) erro
 	return nil
 }
 
-func (s *Service) ProcessBookingBegan(data *entities.BookingBeganEvent) error {
-	fmt.Println(data)
+func (s *Service) ProcessBookingBegan(ctx context.Context, data *entities.BookingBeganEvent) error {
+	log.Println("event booking_began")
 
-	//взаимодействие с базой данных
-
-	return nil
-}
-
-func (s *Service) ProcessBookingUpdated(data *entities.BookingBeganEvent) error {
-	fmt.Println(data)
-
-	//взаимодействие с базой данных
+	err := s.repo.BeginBooking(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
 
 	return nil
 }
 
-func (s *Service) ProcessBookingFinished(data *entities.BookingBeganEvent) error {
-	fmt.Println(data)
+func (s *Service) ProcessBookingUpdated(ctx context.Context, data *entities.BookingUpdatedEvent) error {
+	fmt.Println("event booking_updated")
 
-	//взаимодействие с базой данных
+	err := s.repo.UpdateBooking(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
 
 	return nil
 }
 
-func (s *Service) ProcessBookingCancelled(message *sarama.ConsumerMessage) {
+func (s *Service) ProcessBookingFinished(ctx context.Context, data *entities.BookingFinishedEvent) error {
+	log.Println(data)
 
-	// Здесь добавь
+	err := s.repo.FinishBooking(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+
+	return nil
 }
 
-func (s *Service) ProcessApartmentCreated(message *sarama.ConsumerMessage) {
+func (s *Service) ProcessBookingCancelled(ctx context.Context, data *entities.BookingCancelledEvent) error {
+	log.Println("event booking_cancelled")
 
-	// Здесь добавь
+	err := s.repo.CancelBooking(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+	return nil
 }
 
-func (s *Service) ProcessApartmentRemoved(message *sarama.ConsumerMessage) {
+func (s *Service) ProcessApartmentCreated(ctx context.Context, data *entities.ApartmentCreatedEvent) error {
+	log.Println("event apartment_created")
 
-	// Здесь добавь
+	err := s.repo.NewApartment(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+
+	return nil
+
 }
 
-func (s *Service) ProcessApartmentUpdated(message *sarama.ConsumerMessage) {
+func (s *Service) ProcessApartmentRemoved(ctx context.Context, data *entities.ApartmentRemovedEvent) error {
+	log.Println("event apartment_removed")
 
-	// Здесь добавь
+	err := s.repo.RemoveApartment(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+	return nil
 }
 
-func (s *Service) ProcessCustomerCreated(message *sarama.ConsumerMessage) {
-	fmt.Println("event customer_created")
+func (s *Service) ProcessApartmentUpdated(ctx context.Context, data *entities.ApartmentUpdatedEvent) error {
+	log.Println("event apartment_updated")
 
-	//s.repo.
-	// Здесь добавь
+	err := s.repo.UpdateApartment(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+	return nil
 }
 
-func (s *Service) ProcessCustomerRemoved(message *sarama.ConsumerMessage) {
+func (s *Service) ProcessCustomerCreated(ctx context.Context, data *entities.CustomerCreatedEvent) error {
+	log.Println("event customer_created")
 
-	// Здесь добавь
+	err := s.repo.NewCustomer(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+
+	return nil
 }
 
-func (s *Service) ProcessCustomerUpdated(message *sarama.ConsumerMessage) {
+func (s *Service) ProcessCustomerRemoved(ctx context.Context, data *entities.CustomerRemovedEvent) error {
+	log.Println("event customer_removed")
 
-	// Здесь добавь
+	err := s.repo.RemoveCustomer(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+	return nil
+}
+
+func (s *Service) ProcessCustomerUpdated(ctx context.Context, data *entities.CustomerUpdatedEvent) error {
+	log.Println("event customer_updated")
+
+	err := s.repo.UpdateCustomer(ctx, data)
+	if err != nil {
+		//TODO: This error msg have to be sent to the notification microservice
+		fmt.Println(err.Error())
+		return err
+	}
+	return nil
 }

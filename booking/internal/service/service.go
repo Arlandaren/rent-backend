@@ -32,8 +32,10 @@ func NewService(repo *repository.Repository, producer *kafka.Producer) *Service 
 }
 
 func (s *Service) New(ctx context.Context, req *desc.NewBookingRequest) (*desc.Booking, error) {
+	log.Println("New booking")
 	booking, err := s.repo.New(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
@@ -65,12 +67,12 @@ func (s *Service) New(ctx context.Context, req *desc.NewBookingRequest) (*desc.B
 }
 
 func (s *Service) Begin(ctx context.Context, req *desc.BeginBookingRequest) (*desc.BeginBookingResponse, error) {
+	log.Println("Booking began")
 	date, err := s.repo.Begin(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
-
-	log.Println("Booking begun")
 
 	event := entities.BookingBeganEvent{
 		ID:        req.Id,
@@ -97,8 +99,10 @@ func (s *Service) Begin(ctx context.Context, req *desc.BeginBookingRequest) (*de
 }
 
 func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*desc.FinishBookingResponse, error) {
+	log.Println("Booking finished")
 	date, err := s.repo.Finish(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
@@ -128,8 +132,10 @@ func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*
 }
 
 func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*desc.CancelBookingResponse, error) {
+	log.Println("Booking cancelled")
 	status, dateEnd, err := s.repo.Cancel(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
@@ -156,8 +162,10 @@ func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*
 }
 
 func (s *Service) Update(ctx context.Context, req *desc.UpdateBookingRequest) (*desc.UpdateBookingResponse, error) {
+	log.Println("Booking updated")
 	id, err := s.repo.Update(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 

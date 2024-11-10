@@ -85,7 +85,9 @@ func (aggregator *Aggregator) HandleBookingCreated(message *sarama.ConsumerMessa
 		return
 	}
 
-	err = aggregator.service.ProcessBookingCreated(&data)
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessBookingCreated(ctx, &data)
 
 	if err != nil {
 		log.Printf("handle error booking_created: %v", err)
@@ -94,50 +96,224 @@ func (aggregator *Aggregator) HandleBookingCreated(message *sarama.ConsumerMessa
 
 func (aggregator *Aggregator) HandleBookingBegin(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling booking_begin: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.BookingBeganEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error booking_begin: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessBookingBegan(ctx, &data)
+
+	if err != nil {
+		log.Printf("handle error booking_begin: %v", err)
+	}
+	log.Printf("booking_begin: %v", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleBookingUpdated(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling booking_updated: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.BookingUpdatedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error booking_updated: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessBookingUpdated(ctx, &data)
+
+	if err != nil {
+		log.Printf("handle error booking_updated: %v", err)
+	}
+	log.Printf("booking_updated: %v", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleBookingFinished(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling booking_finished: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.BookingFinishedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error booking_finished: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessBookingFinished(ctx, &data)
+
+	if err != nil {
+		log.Printf("handle error booking_finished: %v", err)
+	}
+	log.Printf("booking_finished: %v", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleBookingCancelled(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling booking_cancelled: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.BookingCancelledEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error booking_cancelled: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessBookingCancelled(ctx, &data)
+
+	if err != nil {
+		log.Printf("handle error booking_cancelled: %v", err)
+	}
+	log.Printf("booking_cancelled: %v", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleApartmentCreated(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling apartment_created: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.ApartmentCreatedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error apartment_created: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessApartmentCreated(ctx, &data)
+
+	if err != nil {
+		fmt.Println("handle error apartment_created: ", err.Error())
+		return
+	}
+
+	fmt.Println("apartment_created: ", string(message.Value))
+
 }
 
 func (aggregator *Aggregator) HandleApartmentRemoved(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling apartment_removed: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.ApartmentRemovedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error apartment_removed: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessApartmentRemoved(ctx, &data)
+
+	if err != nil {
+		fmt.Println("handle error apartment_removed: ", err.Error())
+		return
+	}
+
+	fmt.Println("apartment_removed: ", string(message.Value))
+
 }
 
 func (aggregator *Aggregator) HandleApartmentUpdated(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling apartment_updated: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.ApartmentUpdatedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error apartment_updated: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessApartmentUpdated(ctx, &data)
+
+	if err != nil {
+		fmt.Println("handle error apartment_updated: ", err.Error())
+		return
+	}
+
+	fmt.Println("apartment_updated: ", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleCustomerCreated(message *sarama.ConsumerMessage) {
-	fmt.Printf("handling customer_created: %aggregator\n", string(message.Value))
-	// Здесь добавь
+	log.Printf("handling customer_created: %aggregator\n", string(message.Value))
+
+	var data entities.CustomerCreatedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error customer_created: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessCustomerCreated(ctx, &data)
+
+	if err != nil {
+		log.Println("handle error customer_created: ", err.Error())
+		return
+	}
+	log.Println("customer_created: ", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleCustomerRemoved(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling customer_removed: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.CustomerRemovedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error customer_removed: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessCustomerRemoved(ctx, &data)
+
+	if err != nil {
+		fmt.Println("handle error customer_removed: ", err.Error())
+		return
+	}
+
+	fmt.Println("customer_removed: ", string(message.Value))
 }
 
 func (aggregator *Aggregator) HandleCustomerUpdated(message *sarama.ConsumerMessage) {
 	fmt.Printf("handling customer_updated: %aggregator\n", string(message.Value))
-	// Здесь добавь
+
+	var data entities.CustomerUpdatedEvent
+
+	err := json.Unmarshal(message.Value, &data)
+	if err != nil {
+		log.Printf("decode error customer_updated: %v", err)
+		return
+	}
+
+	ctx := context.Background()
+
+	err = aggregator.service.ProcessCustomerUpdated(ctx, &data)
+
+	if err != nil {
+		fmt.Println("handle error customer_updated: ", err.Error())
+		return
+	}
+
+	fmt.Println("customer_updated: ", string(message.Value))
+
 }

@@ -31,6 +31,7 @@ type BookingFinishedEvent struct {
 }
 
 type BookingCancelledEvent struct {
-	ID     int64  `json:"id"`
-	Status string `json:"status"`
+	ID      int64  `json:"id"`
+	Status  string `json:"status"`
+	DateEnd int64  `json:"date_end"`
 }
