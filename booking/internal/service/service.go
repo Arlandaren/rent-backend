@@ -3,12 +3,14 @@ package service
 import (
 	"context"
 	"encoding/json"
+
 	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"log"
 	"service/internal/repository"
+	"service/internal/shared/entities"
 	"service/internal/shared/kafka"
 	desc "service/pkg/grpc/booking_v1"
-	"strconv"
 )
 
 type Service struct {
@@ -30,21 +32,23 @@ func NewService(repo *repository.Repository, producer *kafka.Producer) *Service 
 }
 
 func (s *Service) New(ctx context.Context, req *desc.NewBookingRequest) (*desc.Booking, error) {
+	log.Println("New booking")
 	booking, err := s.repo.New(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":           strconv.Itoa(int(booking.Id)),
-		"apartment_id": strconv.Itoa(int(booking.ApartmentId)),
-		"date_start":   strconv.FormatInt(booking.DateStart.Seconds, 10),
-		"date_end":     strconv.FormatInt(booking.DateEnd.Seconds, 10),
-		"price":        strconv.Itoa(int(booking.Price)),
-		"customer_id":  strconv.Itoa(int(booking.CustomerId)),
-		"status":       booking.Status,
-		"date_created": strconv.FormatInt(booking.DateCreated.Seconds, 10),
-		"comment":      booking.Comment,
+	event := entities.BookingCreatedEvent{
+		ID:          booking.Id,
+		ApartmentID: booking.ApartmentId,
+		DateStart:   booking.DateStart.Seconds,
+		DateEnd:     booking.DateEnd.Seconds,
+		Price:       booking.Price,
+		CustomerID:  booking.CustomerId,
+		Status:      booking.Status,
+		DateCreated: booking.DateCreated.Seconds,
+		Comment:     booking.Comment,
 	}
 
 	msg, err := json.Marshal(event)
@@ -63,16 +67,16 @@ func (s *Service) New(ctx context.Context, req *desc.NewBookingRequest) (*desc.B
 }
 
 func (s *Service) Begin(ctx context.Context, req *desc.BeginBookingRequest) (*desc.BeginBookingResponse, error) {
+	log.Println("Booking began")
 	date, err := s.repo.Begin(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
-	log.Println("Booking begun")
-
-	event := map[string]string{
-		"id":         strconv.Itoa(int(req.Id)),
-		"date_start": strconv.FormatInt(date.Unix(), 10),
+	event := entities.BookingBeganEvent{
+		ID:        req.Id,
+		DateStart: date.Unix(),
 	}
 
 	msg, err := json.Marshal(event)
@@ -95,14 +99,16 @@ func (s *Service) Begin(ctx context.Context, req *desc.BeginBookingRequest) (*de
 }
 
 func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*desc.FinishBookingResponse, error) {
+	log.Println("Booking finished")
 	date, err := s.repo.Finish(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":       strconv.Itoa(int(req.Id)),
-		"date_end": strconv.FormatInt(date.Unix(), 10),
+	event := entities.BookingFinishedEvent{
+		ID:      req.Id,
+		DateEnd: date.Unix(),
 	}
 
 	msg, err := json.Marshal(event)
@@ -126,14 +132,17 @@ func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*
 }
 
 func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*desc.CancelBookingResponse, error) {
-	status, err := s.repo.Cancel(ctx, req)
+	log.Println("Booking cancelled")
+	status, dateEnd, err := s.repo.Cancel(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":     strconv.Itoa(int(req.Id)),
-		"status": status,
+	event := entities.BookingCancelledEvent{
+		ID:      req.Id,
+		Status:  status,
+		DateEnd: dateEnd.Unix(),
 	}
 
 	msg, err := json.Marshal(event)
@@ -153,17 +162,19 @@ func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*
 }
 
 func (s *Service) Update(ctx context.Context, req *desc.UpdateBookingRequest) (*desc.UpdateBookingResponse, error) {
+	log.Println("Booking updated")
 	id, err := s.repo.Update(ctx, req)
 	if err != nil {
+		log.Println(err.Error())
 		return nil, err
 	}
 
-	event := map[string]string{
-		"id":           strconv.Itoa(int(id)),
-		"apartment_id": strconv.Itoa(int(req.ApartmentId)),
-		"price":        strconv.Itoa(int(req.Price)),
-		"customer_id":  strconv.Itoa(int(req.CustomerId)),
-		"comment":      req.Comment,
+	event := entities.BookingUpdatedEvent{
+		ID:          id,
+		ApartmentID: req.ApartmentId,
+		Price:       req.Price,
+		CustomerID:  req.CustomerId,
+		Comment:     req.Comment,
 	}
 
 	msg, err := json.Marshal(event)

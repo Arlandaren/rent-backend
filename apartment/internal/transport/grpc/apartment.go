@@ -34,6 +34,7 @@ func (s *Server) NewApartment(ctx context.Context, req *desc.NewApartmentRequest
 		Id:        apartment.ID,
 		Title:     apartment.Title,
 		Expenses:  apartment.Expenses,
+		Status:    apartment.Status,
 		CreatedAt: timestamppb.New(apartment.CreatedAt),
 	}
 

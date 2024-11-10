@@ -13,7 +13,7 @@ type Elasticsearch struct {
 }
 
 func NewElasticsearch(url string) *Elasticsearch {
-	client, err := elastic.NewClient(elastic.SetURL(fmt.Sprintf("http://%s", url)))
+	client, err := elastic.NewClient(elastic.SetURL(fmt.Sprintf("http://%aggregator", url)))
 	if err != nil {
 		log.Fatalf("Failed to create Elasticsearch client: %v", err)
 	}
