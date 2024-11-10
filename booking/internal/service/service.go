@@ -128,14 +128,15 @@ func (s *Service) Finish(ctx context.Context, req *desc.FinishBookingRequest) (*
 }
 
 func (s *Service) Cancel(ctx context.Context, req *desc.CancelBookingRequest) (*desc.CancelBookingResponse, error) {
-	status, err := s.repo.Cancel(ctx, req)
+	status, dateEnd, err := s.repo.Cancel(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	event := entities.BookingCancelledEvent{
-		ID:     req.Id,
-		Status: status,
+		ID:      req.Id,
+		Status:  status,
+		DateEnd: dateEnd.Unix(),
 	}
 
 	msg, err := json.Marshal(event)
