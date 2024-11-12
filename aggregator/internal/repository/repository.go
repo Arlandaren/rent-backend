@@ -2,8 +2,11 @@ package repository
 
 import (
 	"context"
+	"github.com/Arlandaren/pgxWrappy/postgres"
 	"log"
-	"service/internal/shared/storage/postgres"
+
+	//"service/internal/shared/storage/postgres"
+
 	desc "service/pkg/grpc/aggregator_v1"
 )
 

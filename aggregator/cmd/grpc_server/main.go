@@ -14,6 +14,8 @@ import (
 	"service/internal/service"
 	"service/internal/shared/kafka"
 	"service/internal/shared/storage/postgres"
+
+	pgxWrapper "github.com/Arlandaren/pgxWrappy/postgres"
 	"sync"
 	"syscall"
 	"time"
@@ -63,9 +65,9 @@ func main() {
 
 	defer dbPool.Close()
 
-	pgxWrapper := postgres.NewWrapper(dbPool)
+	wrapper := pgxWrapper.NewWrapper(dbPool)
 
-	appRepository := repository.NewRepository(pgxWrapper)
+	appRepository := repository.NewRepository(wrapper)
 
 	appService := service.NewService(appRepository, kafkaProducer)
 

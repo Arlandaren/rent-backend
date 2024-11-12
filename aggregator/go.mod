@@ -3,6 +3,7 @@ module service
 go 1.23.2
 
 require (
+	github.com/Arlandaren/pgxWrappy v0.0.0-20241112101027-127d4d417b6c
 	github.com/IBM/sarama v1.43.3
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0
